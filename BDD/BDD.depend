@@ -1,0 +1,34 @@
+# depslib dependency file v1.0
+1361464803 source:c:\users\thibault\documents\projet c++\bdd\src\node.cpp
+	"../include/Node.h"
+	<stdlib.h>
+
+1361464766 c:\users\thibault\documents\projet c++\bdd\include\node.h
+
+1361464872 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+	<iostream>
+	"include/Node.h"
+	"include/BDD.h"
+
+1361465152 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+	"../include/BDD.h"
+	<stdlib.h>
+
+1361462901 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+	<vector>
+	<map>
+	<iostream>
+	<sstream>
+	<iterator>
+	<utility>
+	<string>
+	<algorithm>
+	"Node.h"
+	"Triplet.h"
+
+1361374007 c:\users\thibault\documents\projet c++\bdd\include\triplet.h
+	"Node.h"
+
+1361442678 source:c:\users\thibault\documents\projet c++\bdd\src\triplet.cpp
+	"../include/Triplet.h"
+
