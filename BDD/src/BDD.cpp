@@ -127,14 +127,7 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
         {
             bool temp = vect[varfinal[count+1].second];
             std::cout << varfinal[count+1].first << ":" << temp << ";";
-            if (op[count]=="&")
-            {
-                res = res && temp;
-            }
-            else
-            {
-                res = res || temp;
-            }
+            res = this->op(op[count], res, temp);
         }
         std::cout << "valeur final : " << res << std::endl;
         if (res==false)
@@ -226,6 +219,18 @@ bool BDD::op(std::string o, bool b1, bool b2)
     if (o == "|")
     {
         return (b1 || b2);
+    }
+    if (o == "=>")
+    {
+        return (!b1 || b2);
+    }
+    if (o == "xor")
+    {
+        return ((b1 && !b2) || (!b1 && b2));
+    }
+    if (o == "<=>")
+    {
+        return ((!b1 || b2) && (b1 || !b2));
     }
     else
     {
