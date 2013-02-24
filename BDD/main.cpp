@@ -8,7 +8,7 @@ int main()
 {
     Node* node = new Node();
     BDD* bdd = new BDD();
-    bdd->setExpression("a | b & c");
+    bdd->setExpression("!(a => b) & (c || b)");
     std::cout << "Expression : " << bdd->getExpression() << std::endl;
     bdd->setNbVar(3);
     node = bdd->build();

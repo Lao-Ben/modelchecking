@@ -8,6 +8,8 @@
 #include <iterator>
 #include <utility>
 #include <string>
+#include <stack>
+#include <queue>
 #include <algorithm>
 #include "Node.h"
 #include "Triplet.h"
@@ -32,6 +34,10 @@ class BDD
         bool op(std::string o, bool b1, bool b2);
         int satcount(Node* node);
         int count(Node* node);
+        void toRPN(std::vector<std::string> tab);
+        bool compute();
+        std::string comp(std::string n1, std::string n2, std::string op);
+        bool eval(std::vector<std::string> tab);
     protected:
     private:
         int nbVar;
@@ -41,6 +47,7 @@ class BDD
         std::map<std::pair<int,std::pair<Node*,Node*> >,Node*> vectNode;
         Node* nodeFalse;
         Node* nodeTrue;
+        std::queue<std::string> m_rpn;
 };
 
 #endif // BDD_H

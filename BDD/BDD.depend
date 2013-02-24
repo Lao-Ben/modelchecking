@@ -5,16 +5,16 @@
 
 1361464766 c:\users\thibault\documents\projet c++\bdd\include\node.h
 
-1361468156 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1361714986 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
 	"include/Node.h"
 	"include/BDD.h"
 
-1361468821 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1361715016 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 
-1361462901 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1361711675 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<iostream>
@@ -22,6 +22,8 @@
 	<iterator>
 	<utility>
 	<string>
+	<stack>
+	<queue>
 	<algorithm>
 	"Node.h"
 	"Triplet.h"
@@ -31,4 +33,26 @@
 
 1361442678 source:c:\users\thibault\documents\projet c++\bdd\src\triplet.cpp
 	"../include/Triplet.h"
+
+1361664813 source:c:\users\thibault\documents\projet c++\bdd\src\bee.cpp
+	"../include/BEE.hpp"
+
+1361665062 c:\users\thibault\documents\projet c++\bdd\include\bee.hpp
+	"replace.hpp"
+	<iostream>
+	<sstream>
+	<stack>
+	<queue>
+	<map>
+	<algorithm>
+
+1310029266 c:\users\thibault\documents\projet c++\bdd\include\replace.hpp
+	<iostream>
+	<sstream>
+
+1361664204 source:c:\users\thibault\documents\projet c++\bdd\src\replace.cpp
+	"../include/replace.hpp"
+
+1361664813 c:\users\thibault\documents\projet c++\bdd\src\bee.cpp
+	"../include/BEE.hpp"
 
