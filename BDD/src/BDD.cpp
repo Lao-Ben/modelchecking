@@ -67,6 +67,7 @@ Node* BDD::build()
         return this->buildprime(this->vect, 1);
     } catch (int code) {
         std::cerr << "Exception : Not enough variable. Give " << this->nbVar << " but need " << code << std::endl;
+      return NULL;
     }
 }
 

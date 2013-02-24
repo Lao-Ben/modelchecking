@@ -12,7 +12,6 @@
 #include <queue>
 #include <algorithm>
 #include "Node.h"
-#include "Triplet.h"
 
 class BDD
 {
