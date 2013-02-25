@@ -1,5 +1,7 @@
 #include "../include/BDD.h"
 #include <stdlib.h>
+#include <math.h>
+
 
 BDD::BDD()
 {
@@ -453,15 +455,6 @@ bool BDD::op(std::string o, bool b1, bool b2)
     }
 }
 
-int puissance(int a, int b)
-{
-    int res = 1;
-    for (int i=1; i <= b; i++)
-    {
-        res = res * a;
-    }
-    return res;
-}
 
 int BDD::count(Node* node)
 {
@@ -479,13 +472,13 @@ int BDD::count(Node* node)
     }
     else
     {
-        res = puissance(2,(node->getLhs()->getIndice() - node->getIndice() - 1))*count(node->getLhs()) +
-            puissance(2,(node->getRhs()->getIndice() - node->getIndice() - 1))*count(node->getRhs());
+        res = pow(2,(node->getLhs()->getIndice() - node->getIndice() - 1))*count(node->getLhs()) +
+            pow(2,(node->getRhs()->getIndice() - node->getIndice() - 1))*count(node->getRhs());
     }
     return res;
 }
 
 int BDD::satcount(Node* node)
 {
-    return (puissance(2,(node->getIndice() - 1))*count(node));
+    return (pow(2,(node->getIndice() - 1))*count(node));
 }

@@ -13,6 +13,6 @@ int main()
     bdd->setNbVar(3);
     node = bdd->build();
     int res = bdd->satcount(node);
-    cout << "Hello world! " << res << endl;
+    cout << "count : " << res << endl;
     return 0;
 }
