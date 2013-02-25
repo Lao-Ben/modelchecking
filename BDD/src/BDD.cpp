@@ -1,5 +1,7 @@
 #include "../include/BDD.h"
 #include <stdlib.h>
+#include <math.h>
+
 
 BDD::BDD()
 {
@@ -67,6 +69,7 @@ Node* BDD::build()
         return this->buildprime(this->vect, 1);
     } catch (int code) {
         std::cerr << "Exception : Not enough variable. Give " << this->nbVar << " but need " << code << std::endl;
+      return NULL;
     }
 }
 
@@ -91,19 +94,19 @@ std::pair<bool,int> find(std::vector<std::pair<std::string, int> > vect, std::st
 }
 
 int priority(std::string op) {
-	if (op == "||" || op == "|")
-        return 0;
-    if (op == "&&" || op == "&")
-        return 1;
-    if (op == "=>")
-        return 2;
-    if (op == "xor")
-        return 3;
-    if (op == "<=>")
-        return 4;
-    if (op == "!")
-        return 5;
-    return -1;
+  if (op == "=>")
+    return 0;
+  if (op == "<=>")
+    return 1;
+  if (op == "xor")
+    return 2;
+  if (op == "||" || op == "|")
+    return 3;
+  if (op == "&&" || op == "&")
+    return 4;
+  if (op == "!")
+    return 5;
+  return -1;
 }
 
 std::string BDD::comp(std::string n1, std::string n2, std::string o) {
@@ -490,15 +493,6 @@ bool BDD::op(std::string o, bool b1, bool b2)
     }
 }
 
-int puissance(int a, int b)
-{
-    int res = 1;
-    for (int i=1; i <= b; i++)
-    {
-        res = res * a;
-    }
-    return res;
-}
 
 int BDD::count(Node* node)
 {
@@ -516,13 +510,13 @@ int BDD::count(Node* node)
     }
     else
     {
-        res = puissance(2,(node->getLhs()->getIndice() - node->getIndice() - 1))*count(node->getLhs()) +
-            puissance(2,(node->getRhs()->getIndice() - node->getIndice() - 1))*count(node->getRhs());
+        res = pow(2,(node->getLhs()->getIndice() - node->getIndice() - 1))*count(node->getLhs()) +
+            pow(2,(node->getRhs()->getIndice() - node->getIndice() - 1))*count(node->getRhs());
     }
     return res;
 }
 
 int BDD::satcount(Node* node)
 {
-    return (puissance(2,(node->getIndice() - 1))*count(node));
+    return (pow(2,(node->getIndice() - 1))*count(node));
 }
