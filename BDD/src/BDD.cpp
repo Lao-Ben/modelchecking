@@ -94,19 +94,19 @@ std::pair<bool,int> find(std::vector<std::pair<std::string, int> > vect, std::st
 }
 
 int priority(std::string op) {
-	if (op == "||" || op == "|")
-        return 0;
-    if (op == "&&" || op == "&")
-        return 1;
-    if (op == "=>")
-        return 2;
-    if (op == "xor")
-        return 3;
-    if (op == "<=>")
-        return 4;
-    if (op == "!")
-        return 5;
-    return -1;
+  if (op == "=>")
+    return 0;
+  if (op == "<=>")
+    return 1;
+  if (op == "xor")
+    return 2;
+  if (op == "||" || op == "|")
+    return 3;
+  if (op == "&&" || op == "&")
+    return 4;
+  if (op == "!")
+    return 5;
+  return -1;
 }
 
 std::string BDD::comp(std::string n1, std::string n2, std::string o) {
