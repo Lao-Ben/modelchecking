@@ -366,6 +366,44 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
     }
 }
 
+std::string BDD::anysat(Node* node)
+{
+    std::string s = "";
+    if (node->isLeaf())
+    {
+        if (node->getValue())
+        {
+            return "error";
+        }
+        else
+        {
+            return "[]";
+        }
+    }
+    else
+    {
+        if (node->getLhs()->isLeaf() == true && node->getLhs()->getValue() == false)
+        {
+            std::string str = anysat(node->getRhs());
+            if (str != "error")
+            {
+                s = s + "true; "+str;
+                return (s);
+            }
+        }
+        else
+        {
+            std::string str = anysat(node->getLhs());
+            if (str != "error")
+            {
+                s = s + "false; "+str;
+                return (s);
+            }
+        }
+        return "";
+    }
+}
+
 Node* BDD::MK(int i, Node* l, Node* r)
 {
     if (l == r)

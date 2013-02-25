@@ -12,7 +12,6 @@
 #include <queue>
 #include <algorithm>
 #include "Node.h"
-#include "Triplet.h"
 
 class BDD
 {
@@ -38,6 +37,7 @@ class BDD
         bool compute();
         std::string comp(std::string n1, std::string n2, std::string op);
         bool eval(std::vector<std::string> tab);
+        std::string anysat(Node* node);
     protected:
     private:
         int nbVar;

@@ -5,16 +5,16 @@
 
 1361464766 c:\users\thibault\documents\projet c++\bdd\include\node.h
 
-1361714986 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1361788239 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
 	"include/Node.h"
 	"include/BDD.h"
 
-1361715016 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1361788589 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 
-1361711675 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1361788247 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<iostream>
@@ -26,7 +26,6 @@
 	<queue>
 	<algorithm>
 	"Node.h"
-	"Triplet.h"
 
 1361374007 c:\users\thibault\documents\projet c++\bdd\include\triplet.h
 	"Node.h"
