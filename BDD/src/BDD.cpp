@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-
 BDD::BDD()
 {
     //ctor
@@ -34,6 +33,7 @@ void BDD::setNbVar(int nbvar)
 {
     this->nbVar = nbvar;
     this->vect = std::vector<bool>(nbvar);
+    this->vectVar = std::vector<std::string>(nbVar);
     this->nodeFalse->setIndice(nbvar+1);
     this->nodeTrue->setIndice(nbvar+1);
 }
@@ -66,10 +66,12 @@ std::vector<Node*> BDD::getVectorNode()
 Node* BDD::build()
 {
     try {
-        return this->buildprime(this->vect, 1);
+        Node* n = this->buildprime(this->vect, 1);
+        this->setTopNode(n);
+        return n;
     } catch (int code) {
         std::cerr << "Exception : Not enough variable. Give " << this->nbVar << " but need " << code << std::endl;
-      return NULL;
+        return NULL;
     }
 }
 
@@ -94,7 +96,7 @@ std::pair<bool,int> find(std::vector<std::pair<std::string, int> > vect, std::st
 }
 
 int priority(std::string op) {
-  if (op == "=>")
+	if (op == "=>")
     return 0;
   if (op == "<=>")
     return 1;
@@ -334,6 +336,7 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
             std::pair<int, std::string> pair1 = var[c];
             std::pair<std::string, int> pair2 = varfinal[c];
             bool tmp = vect[pair2.second];
+            vectVar[pair2.second] = pair2.first;
             if (tmp)
                 tab[pair1.first] = "true";
             else
@@ -459,8 +462,11 @@ Node* BDD::APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Nod
     }
 }
 
-Node* BDD::APPLY(std::string op, Node* u1, Node* u2)
+Node* BDD::APPLY(std::string op, BDD* bdd1, BDD* bdd2)
 {
+    Node* u1 = bdd1->getTopNode();
+    Node* u2 = bdd2->getTopNode();
+    std::cout << "(" << bdd1->getExpression() << ") " << op << " (" << bdd2->getExpression() << ")" << std::endl;
     std::map<std::pair<Node*, Node*>,Node*> map;
     return this->APP(op, u1, u2, map);
 }
@@ -493,7 +499,6 @@ bool BDD::op(std::string o, bool b1, bool b2)
     }
 }
 
-
 int BDD::count(Node* node)
 {
     int res = 0;
@@ -516,7 +521,40 @@ int BDD::count(Node* node)
     return res;
 }
 
-int BDD::satcount(Node* node)
+int BDD::satcount()
 {
+    Node* node = this->getTopNode();
     return (pow(2,(node->getIndice() - 1))*count(node));
+}
+
+Node* BDD::getTopNode()
+{
+    return this->topNode;
+}
+void BDD::setTopNode(Node* node)
+{
+    this->topNode = node;
+}
+
+std::string BDD::draw()
+{
+    return this->drawbis(this->getTopNode());
+}
+
+std::string BDD::drawbis(Node* node)
+{
+    if (node == NULL)
+        return "NULL";
+    else if (node->isLeaf())
+    {
+        if (node->getValue() == true)
+            return "true";
+        else
+            return "false";
+    }
+    else
+    {
+        std::string s = this->vectVar[node->getIndice()-1];
+        return (s + "(" + drawbis(node->getLhs())+";"+drawbis(node->getRhs())+")");
+    }
 }

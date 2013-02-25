@@ -10,6 +10,8 @@
 #include <string>
 #include <stack>
 #include <queue>
+#include<stdio.h>
+#include<stdlib.h>
 #include <algorithm>
 #include "Node.h"
 
@@ -29,25 +31,31 @@ class BDD
         Node* buildprime(std::vector<bool> vect, int i);
         Node* MK(int i, Node* l, Node* r);
         Node* APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Node*>,Node*> map);
-        Node* APPLY(std::string op, Node* u1, Node* u2);
+        Node* APPLY(std::string op, BDD* u1, BDD* u2);
         bool op(std::string o, bool b1, bool b2);
-        int satcount(Node* node);
+        int satcount();
         int count(Node* node);
         void toRPN(std::vector<std::string> tab);
         bool compute();
         std::string comp(std::string n1, std::string n2, std::string op);
         bool eval(std::vector<std::string> tab);
         std::string anysat(Node* node);
+        Node* getTopNode();
+        void setTopNode(Node* node);
+        std::string drawbis(Node* node);
+        std::string draw();
     protected:
     private:
         int nbVar;
         std::string expression;
         std::vector<bool> vect;
+        std::vector<std::string> vectVar;
         std::vector<Node*> vectorNode;
         std::map<std::pair<int,std::pair<Node*,Node*> >,Node*> vectNode;
         Node* nodeFalse;
         Node* nodeTrue;
         std::queue<std::string> m_rpn;
+        Node* topNode;
 };
 
 #endif // BDD_H

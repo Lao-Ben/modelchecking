@@ -5,16 +5,17 @@
 
 1361464766 c:\users\thibault\documents\projet c++\bdd\include\node.h
 
-1361788239 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1361822253 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
 	"include/Node.h"
 	"include/BDD.h"
 
-1361788589 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1361822745 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
+	<math.h>
 
-1361788247 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1361822220 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<iostream>
@@ -24,6 +25,8 @@
 	<string>
 	<stack>
 	<queue>
+	<stdio.h>
+	<stdlib.h>
 	<algorithm>
 	"Node.h"
 
