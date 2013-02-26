@@ -8,21 +8,31 @@ int main()
 {
     Node* node = new Node();
     BDD* bdd = new BDD();
-    bdd->setExpression("a & b | c");
+    bdd->setExpression("(a | b & c) => (d xor e) && f");
     std::cout << "Expression : " << bdd->getExpression() << std::endl;
-    bdd->setNbVar(3);
+    bdd->setNbVar(6);
     node = bdd->build();
     Node* node2 = new Node();
     BDD* bdd2 = new BDD();
-    bdd2->setExpression("a & b");
+    bdd2->setExpression("a & b | c");
     std::cout << "Expression : " << bdd2->getExpression() << std::endl;
-    bdd2->setNbVar(2);
+    bdd2->setNbVar(3);
     node2 = bdd2->build();
-    //Node* node3 = bdd->APPLY("&",bdd, bdd2);
     int res = bdd->satcount();
     cout << "Nombre de solution satisfaisante pour bdd: " << res << endl;
+    cout << "Draw pour bdd: (" << bdd->draw() << ")" << endl;
     cout << "Nombre de solution satisfaisante pour bdd2: " << bdd2->satcount() << endl;
+    cout << "Draw pour bdd2: (" << bdd2->draw() << ")" << endl;
+    BDD* bdd3 = new BDD();
+    Node* node3 = bdd3->APPLY("&",*bdd, *bdd2);
+    cout << "Nombre de solution satisfaisante pour apply: " << bdd3->satcount() << endl;
+    cout << "Draw pour apply: (" << bdd3->draw() << ")" << endl;
+    BDD* bdd4 = bdd3;
+    std::cout << "Expression : " << bdd4->getExpression() << std::endl;
+    Node* node4 = bdd4->build();
+    cout << "Nombre de solution satisfaisante pour bdd4: " << bdd4->satcount() << endl;
+    cout << "Draw pour bdd4: (" << bdd4->draw() << ")" << endl;
+    cout << bdd4->anysat() << endl;
     //bdd->DrawTree_Horizonral(node,'r',0,0,0);
-    std::cout << "(" << bdd->draw() << ")" << std::endl;
     return 0;
 }

@@ -246,7 +246,7 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
         for (int c = 0; c < tab.size(); c++)
         {
             std::string t = tab[c];
-            if (t != "&" && t != "&&" && t != "||" && t != "|" && t != "!" && t != "=>" && t != "<=>" && t != "xor" && t != "(" && t != ")")
+            if (t != "&" && t != "&&" && t != "||" && t != "|" && t != "!" && t != "=>" && t != "<=>" && t != "xor" && t != "(" && t != ")" && t!="true" && t!="false")
             {
                 std::string tmp = t.substr(0,1);
                 if (tmp == "!")
@@ -372,12 +372,45 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
     }
 }
 
-std::string BDD::anysat(Node* node)
+Node* BDD::restr(int indVar, bool val)
+{
+    return (res(this->getTopNode(), indVar, val));
+}
+
+Node* BDD::res(Node* node, int indVar, bool val)
+{
+    if (node->getIndice() > indVar)
+    {
+        return node;
+    }
+    else if (node->getIndice() < indVar)
+    {
+        return MK(node->getIndice(), res(node->getLhs(), indVar, val), res(node->getRhs(), indVar, val));
+    }
+    else
+    {
+        if (val == false)
+        {
+            return res(node->getRhs(), indVar, val);
+        }
+        else
+        {
+            return res(node->getLhs(), indVar, val);
+        }
+    }
+}
+
+std::string BDD::anysat()
+{
+    return this->anysataux(this->getTopNode());
+}
+
+std::string BDD::anysataux(Node* node)
 {
     std::string s = "";
     if (node->isLeaf())
     {
-        if (node->getValue())
+        if (node->getValue() == false)
         {
             return "error";
         }
@@ -388,21 +421,31 @@ std::string BDD::anysat(Node* node)
     }
     else
     {
-        if (node->getLhs()->isLeaf() == true && node->getLhs()->getValue() == false)
+        if (node->getRhs()->isLeaf() == true && node->getRhs()->getValue() == false)
         {
-            std::string str = anysat(node->getRhs());
+            std::string str = anysataux(node->getLhs());
             if (str != "error")
             {
-                s = s + "true; "+str;
+                s = "["+ this->getVectVar()[node->getIndice()-1] +":true;"+str+"]";
+                return (s);
+            }
+            else
+            {
+                s = "["+ this->getVectVar()[node->getIndice()-1] +":false;"+anysataux(node->getRhs())+"]";
                 return (s);
             }
         }
         else
         {
-            std::string str = anysat(node->getLhs());
+            std::string str = anysataux(node->getRhs());
             if (str != "error")
             {
-                s = s + "false; "+str;
+                s = "["+ this->getVectVar()[node->getIndice()-1] +":false;"+str+"]";
+                return (s);
+            }
+            else
+            {
+                s = "["+ this->getVectVar()[node->getIndice()-1] +":true;"+anysataux(node->getLhs())+"]";
                 return (s);
             }
         }
@@ -433,7 +476,7 @@ Node* BDD::APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Nod
     }
     else
     {
-        Node* node = new Node();
+        Node* node;
         if (u1->isLeaf() && u2->isLeaf())
         {
             if (this->op(op,u1->getValue(),u2->getValue()) == true)
@@ -455,20 +498,61 @@ Node* BDD::APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Nod
         }
         else
         {
-            node = this->MK(u1->getIndice(), this->APP(op,u1, u2->getLhs(), map), this->APP(op,u1, u2->getRhs(), map));
+            node = this->MK(u2->getIndice(), this->APP(op,u1, u2->getLhs(), map), this->APP(op,u1, u2->getRhs(), map));
         }
         map.insert(std::make_pair(std::make_pair(u1,u2), node));
         return node;
     }
 }
 
-Node* BDD::APPLY(std::string op, BDD* bdd1, BDD* bdd2)
+void setIndLeaf(Node* node, int val)
 {
-    Node* u1 = bdd1->getTopNode();
-    Node* u2 = bdd2->getTopNode();
-    std::cout << "(" << bdd1->getExpression() << ") " << op << " (" << bdd2->getExpression() << ")" << std::endl;
+    if (node != NULL)
+    {
+        if (node->isLeaf())
+            node->setIndice(val);
+        else
+        {
+            setIndLeaf(node->getLhs(), val);
+            setIndLeaf(node->getRhs(), val);
+        }
+    }
+}
+
+Node* BDD::APPLY(std::string op, BDD bdd1, BDD bdd2)
+{
+    Node* u1 = bdd1.getTopNode();
+    Node* u2 = bdd2.getTopNode();
+    std::cout << "(" << bdd1.getExpression() << ") " << op << " (" << bdd2.getExpression() << ")" << std::endl;
+    this->expression = "( " + bdd1.getExpression() + " ) " + op + " ( " + bdd2.getExpression() + " )";
     std::map<std::pair<Node*, Node*>,Node*> map;
-    return this->APP(op, u1, u2, map);
+    int size1 = bdd1.getVector().size();
+    int size2 = bdd2.getVector().size();
+    if (size1 < size2)
+    {
+        this->vect = bdd2.getVector();
+        this->vectVar = bdd2.getVectVar();
+    }
+    else
+    {
+        this->vect = bdd1.getVector();
+        this->vectVar = bdd1.getVectVar();
+    }
+    this->nbVar = this->vect.size();
+    this->nodeFalse->setIndice(this->vect.size()+1);
+    this->nodeTrue->setIndice(this->vect.size()+1);
+    setIndLeaf(u1, this->vect.size()+1);
+    setIndLeaf(u2, this->vect.size()+1);
+    Node* node = this->APP(op, u1, u2, map);
+    setIndLeaf(u1, size1+1);
+    setIndLeaf(u2, size2+1);
+    this->setTopNode(node);
+    return node;
+}
+
+std::vector<std::string> BDD::getVectVar()
+{
+    return this->vectVar;
 }
 
 bool BDD::op(std::string o, bool b1, bool b2)

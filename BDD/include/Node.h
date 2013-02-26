@@ -22,8 +22,8 @@ class Node
         virtual ~Node();
     protected:
     private:
-        Node* lhs;
-        Node* rhs;
+        Node* lhs; /* noeud si vrai */
+        Node* rhs; /* noeud si faux */
         int indice;
         bool value;
         bool leaf;
