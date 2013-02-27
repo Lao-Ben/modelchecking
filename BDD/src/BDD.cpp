@@ -65,8 +65,13 @@ std::vector<Node*> BDD::getVectorNode()
 
 Node* BDD::build()
 {
+    return build(false);
+}
+
+Node* BDD::build(bool print)
+{
     try {
-        Node* n = this->buildprime(this->vect, 1);
+        Node* n = this->buildprime(this->vect, 1, print);
         this->setTopNode(n);
         return n;
     } catch (int code) {
@@ -237,7 +242,7 @@ bool BDD::eval(std::vector<std::string> tab) {
 	return compute();
 }
 
-Node* BDD::buildprime(std::vector<bool> vect, int i)
+Node* BDD::buildprime(std::vector<bool> vect, int i, bool print)
 {
     if (i > vect.size())
     {
@@ -336,26 +341,30 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
             std::pair<int, std::string> pair1 = var[c];
             std::pair<std::string, int> pair2 = varfinal[c];
             bool tmp = vect[pair2.second];
-            vectVar[pair2.second] = pair2.first;
+            this->vectVar[pair2.second] = pair2.first;
             if (tmp)
                 tab[pair1.first] = "true";
             else
                 tab[pair1.first] = "false";
         }
-        for (int c = 0; c < tab.size(); c++)
-        {
-            std::cout << tab[c] << " ";
-        }
+        if (print)
+            for (int c = 0; c < tab.size(); c++)
+            {
+                std::cout << tab[c] << " ";
+            }
         bool res = eval(tab);
-        std::cout << "; valeur finale :";
+        if (print)
+            std::cout << "; valeur finale :";
         if (res==false)
         {
-            std::cout << "false" << std::endl;
+            if (print)
+                std::cout << "false" << std::endl;
             return this->nodeFalse;
         }
         else
         {
-            std::cout << "true" << std::endl;
+            if (print)
+                std::cout << "true" << std::endl;
             return this->nodeTrue;
         }
         //std::cout << var.size() << ";" << op.size() << ";" << res << std::endl;
@@ -366,8 +375,8 @@ Node* BDD::buildprime(std::vector<bool> vect, int i)
         vect0[i-1] = true;
         std::vector<bool> vect1 = vect;
         vect1[i-1] = false;
-        Node* v0 = buildprime(vect0,i+1);
-        Node* v1 = buildprime(vect1,i+1);
+        Node* v0 = buildprime(vect0,i+1, print);
+        Node* v1 = buildprime(vect1,i+1, print);
         return this->MK(i, v0, v1);
     }
 }
@@ -397,6 +406,90 @@ Node* BDD::res(Node* node, int indVar, bool val)
         {
             return res(node->getLhs(), indVar, val);
         }
+    }
+}
+
+void BDD::parray(std::vector<int> A, int level) {
+    std::vector<std::vector<std::string> > tab = std::vector<std::vector<std::string> >(1);
+    for (int i = 1; i < level; i++)
+    {
+        std::string s = "[" + this->getVectVar()[i-1] + ":";
+        if (A[i] < 0)
+        {
+            int nb = tab.size();
+            for (int j = 0; j < nb; j++)
+                tab.push_back(tab[j]);
+            for (int j = 0; j < tab.size(); j++)
+            {
+                if (j % 2 == 0)
+                    tab[j].push_back(s+"true");
+                else
+                    tab[j].push_back(s+"false");
+            }
+        }
+        else
+        {
+            if (A[i] == 0)
+            {
+                for (int j = 0; j < tab.size(); j++)
+                {
+                    tab[j].push_back(s+"false");
+                }
+            }
+            else
+            {
+                for (int j = 0; j < tab.size(); j++)
+                {
+                    tab[j].push_back(s+"true");
+                }
+            }
+        }
+    }
+    for (int i = 0; i < tab.size(); i++)
+    {
+        for (int j=0; j < tab[i].size(); j++)
+        {
+            if (j != 0)
+                std::cout << ",";
+            std::cout << tab[i][j];
+        }
+        for (int j = 1; j < level; j++)
+            std::cout << "]";
+        std::cout << "=true" << std::endl;
+    }
+}
+
+void BDD::allsat_rec(Node* node, std::vector<int> A, int level)
+{
+  int v = node->getIndice();
+  while (level < v) {
+    A[level] = -1;		/* mark redundant tests as -1 */
+    level++;
+  }
+
+  if (node->isLeaf() && node->getValue()) {
+    parray(A, level);
+    return;
+  }
+  if (!(node->getRhs()->isLeaf() && (node->getRhs()->getValue() == false))) {
+    A[v] = 0;
+    allsat_rec(node->getRhs(), A, v+1);
+  }
+  if (!(node->getLhs()->isLeaf() && (node->getLhs()->getValue() == false))) {
+    A[v] = 1;
+    allsat_rec(node->getLhs(), A, v+1);
+  }
+  return;
+}
+
+void BDD::allsat()
+{
+    Node* node = this->getTopNode();
+    if (node->isLeaf() && (node->getValue() == false)) {
+        printf("no solutions");
+    } else {
+        std::vector<int> A = std::vector<int>(this->nbVar+1);
+        allsat_rec(node, A, 1);
     }
 }
 

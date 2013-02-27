@@ -29,7 +29,8 @@ class BDD
         void setNbVar(int nbvar);
         void setExpression(std::string expr);
         Node* build();
-        Node* buildprime(std::vector<bool> vect, int i);
+        Node* build(bool print);
+        Node* buildprime(std::vector<bool> vect, int i, bool print);
         Node* MK(int i, Node* l, Node* r);
         Node* APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Node*>,Node*> map);
         Node* APPLY(std::string op, BDD u1, BDD u2);
@@ -40,16 +41,19 @@ class BDD
         bool compute();
         std::string comp(std::string n1, std::string n2, std::string op);
         bool eval(std::vector<std::string> tab);
-        std::string anysataux(Node* node);
         std::string anysat();
         Node* getTopNode();
         void setTopNode(Node* node);
-        std::string drawbis(Node* node);
         std::string draw();
         Node* restr(int indVar, bool val);
         Node* res(Node* node, int indVar, bool val);
+        void allsat();
     protected:
     private:
+        std::string anysataux(Node* node);
+        std::string drawbis(Node* node);
+        void parray(std::vector<int> A, int level);
+        void allsat_rec(Node* node, std::vector<int> A, int level);
         int nbVar;
         std::string expression;
         std::vector<bool> vect;
