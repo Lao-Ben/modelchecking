@@ -35,16 +35,10 @@
 			<Add option="-fexceptions -Wabi" />
 		</Compiler>
 		<Unit filename="include\BDD.h" />
-		<Unit filename="include\BEE.hpp" />
 		<Unit filename="include\Node.h" />
-		<Unit filename="include\Triplet.h" />
-		<Unit filename="include\replace.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src\BDD.cpp" />
-		<Unit filename="src\BEE.cpp" />
 		<Unit filename="src\Node.cpp" />
-		<Unit filename="src\Triplet.cpp" />
-		<Unit filename="src\replace.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

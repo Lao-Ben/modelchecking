@@ -6,42 +6,158 @@ using namespace std;
 
 int main()
 {
+    int n  = 4;
+    // créer un flux de sortie
+    std::ostringstream oss;
+    for (int i=0; i < n; i++)
+    {
+        if (i != 0)
+        {
+            oss << " & ";
+        }
+        oss << "( ";
+        for (int j=0; j < n; j++)
+        {
+            if (j != 0)
+            {
+                oss << " | ";
+            }
+            oss << "( c"<<i<<j<<" & ( ";
+            bool first = true;
+            for (int h = 0; h < n; h++)
+            {
+                if (h != j)
+                {
+                    if (!first)
+                        oss << " & ";
+                    oss << "!c"<<i<<h;
+                    first = false;
+                }
+            }
+            oss << " ) )";
+        }
+        oss << " )";
+    }
+    oss << " & ";
+    for (int i=0; i < n; i++)
+    {
+        if (i != 0)
+        {
+            oss << " & ";
+        }
+        oss << "( ";
+        for (int j=0; j < n; j++)
+        {
+            if (j != 0)
+            {
+                oss << " | ";
+            }
+            oss << "( c"<<j<<i<<" & ( ";
+            bool first = true;
+            for (int h = 0; h < n; h++)
+            {
+                if (h != j)
+                {
+                    if (!first)
+                        oss << " & ";
+                    oss << "!c"<<h<<i;
+                    first = false;
+                }
+            }
+            oss << " ) )";
+        }
+        oss << " )";
+    }
+    oss << " & ";
+    for (int i = 0; i < n; i++)
+    {
+        if (i != 0)
+        {
+            oss << " & ";
+        }
+        oss << "( ";
+        for (int j=0; j < n; j++)
+        {
+            if (j != 0)
+            {
+                oss << " | ";
+            }
+            oss << "( c"<<i<<j;
+            std::ostringstream osstemp;
+            bool first = true;
+            for (int h = 0; h < n; h++)
+            {
+                int val = j+h-i;
+                if (h != i && val>=0 && val<n)
+                {
+                    if (first)
+                        osstemp <<" & ( ";
+                    if (!first)
+                        osstemp << " & ";
+                    osstemp << "!c"<<h<<val;
+                    first = false;
+                }
+            }
+            std::string temp = osstemp.str();
+            if (temp != "")
+                oss << temp << " ) )";
+            else
+                oss << " )";
+        }
+        oss << " )";
+    }
+    oss << " & ";
+    for (int i = 0; i < n; i++)
+    {
+        if (i != 0)
+        {
+            oss << " & ";
+        }
+        oss << "( ";
+        for (int j=0; j < n; j++)
+        {
+            if (j != 0)
+            {
+                oss << " | ";
+            }
+            oss << "( c"<<i<<j;
+            std::ostringstream osstemp;
+            bool first = true;
+            for (int h = 0; h < n; h++)
+            {
+                int val = j+i-h;
+                if (h != i && val>=0 && val<n)
+                {
+                    if (first)
+                        osstemp <<" & ( ";
+                    if (!first)
+                        osstemp << " & ";
+                    osstemp << "!c"<<h<<val;
+                    first = false;
+                }
+            }
+            std::string temp = osstemp.str();
+            if (temp != "")
+                oss << temp << " ) )";
+            else
+                oss << " )";
+        }
+        oss << " )";
+    }
+    // récupérer une chaîne de caractères
+    std::string s = oss.str();
     Node* node = new Node();
     BDD* bdd = new BDD();
-    bdd->setExpression("(a | b & c) => (d xor e) && f");
+    bdd->setExpression("( "+s+" )");
+    //bdd->setExpression("( a & ( b & c ) )");
     std::cout << "Expression : " << bdd->getExpression() << std::endl;
-    bdd->setNbVar(6);
+    bdd->setNbVar(n*n);
+
+    cout << "Debut build"<<endl;
     node = bdd->build();
+    cout << "Fin build"<<endl;
     cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << endl;
     cout << "Une solution : " << bdd->anysat() << endl;
-    Node* node2 = new Node();
-    BDD* bdd2 = new BDD();
-    bdd2->setExpression("a & b | c");
-    std::cout << "Expression : " << bdd2->getExpression() << std::endl;
-    bdd2->setNbVar(3);
-    node2 = bdd2->build();
-    int res = bdd->satcount();
-    cout << "Nombre de solution satisfaisante pour bdd: " << res << endl;
-    cout << "Draw pour bdd: (" << bdd->draw() << ")" << endl;
-    cout << "Nombre de solution satisfaisante pour bdd2: " << bdd2->satcount() << endl;
-    cout << "Draw pour bdd2: (" << bdd2->draw() << ")" << endl;
-    BDD* bdd3 = new BDD();
-    Node* node3 = bdd3->APPLY("&",*bdd, *bdd2);
-    cout << "Nombre de solution satisfaisante pour apply: " << bdd3->satcount() << endl;
-    cout << "Draw pour apply: (" << bdd3->draw() << ")" << endl;
-    BDD* bdd4 = bdd3;
-    std::cout << "Expression : " << bdd4->getExpression() << std::endl;
-    Node* node4 = bdd4->build();
-    cout << "Nombre de solution satisfaisante pour bdd4: " << bdd4->satcount() << endl;
-    cout << "Draw pour bdd4: (" << bdd4->draw() << ")" << endl;
-    cout << bdd4->anysat() << endl;
-    Node* node5 = bdd4->restr(1, true);
-    BDD* bdd5 = bdd4;
-    bdd5->setTopNode(node5);
-    bdd5->build();
-    cout << "Nombre de solution satisfaisante pour bdd5: " << bdd5->satcount() << endl;
-    cout << "Draw pour bdd5: (" << bdd5->draw() << ")" << endl;
-    bdd5->allsat();
-    //bdd->DrawTree_Horizonral(node,'r',0,0,0);
+    cout << bdd->draw() << endl;
     return 0;
 }

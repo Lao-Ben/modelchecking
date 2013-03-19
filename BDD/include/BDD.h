@@ -12,6 +12,8 @@
 #include <queue>
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
+#include <stdio.h>
 #include <algorithm>
 #include "Node.h"
 
@@ -30,7 +32,7 @@ class BDD
         void setExpression(std::string expr);
         Node* build();
         Node* build(bool print);
-        Node* buildprime(std::vector<bool> vect, int i, bool print);
+        Node* buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<std::pair<std::string, int> > varfinal);
         Node* MK(int i, Node* l, Node* r);
         Node* APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Node*>,Node*> map);
         Node* APPLY(std::string op, BDD u1, BDD u2);

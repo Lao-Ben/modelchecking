@@ -63,23 +63,6 @@ std::vector<Node*> BDD::getVectorNode()
     return this->vectorNode;
 }
 
-Node* BDD::build()
-{
-    return build(false);
-}
-
-Node* BDD::build(bool print)
-{
-    try {
-        Node* n = this->buildprime(this->vect, 1, print);
-        this->setTopNode(n);
-        return n;
-    } catch (int code) {
-        std::cerr << "Exception : Not enough variable. Give " << this->nbVar << " but need " << code << std::endl;
-        return NULL;
-    }
-}
-
 std::vector<std::string> parse(std::string l)
 {
     std::stringstream ss(l);
@@ -242,10 +225,14 @@ bool BDD::eval(std::vector<std::string> tab) {
 	return compute();
 }
 
-Node* BDD::buildprime(std::vector<bool> vect, int i, bool print)
+Node* BDD::build()
 {
-    if (i > vect.size())
-    {
+    return build(false);
+}
+
+Node* BDD::build(bool print)
+{
+    try {
         std::vector<std::string> tab = parse(this->getExpression());
         std::vector<std::pair<int, std::string> > var;
         for (int c = 0; c < tab.size(); c++)
@@ -336,6 +323,19 @@ Node* BDD::buildprime(std::vector<bool> vect, int i, bool print)
         }
         if (vect.size() != number)
             throw number;
+        Node* n = this->buildprime(this->vect, 1, print, tab, var, varfinal);
+        this->setTopNode(n);
+        return n;
+    } catch (int code) {
+        std::cerr << "Exception : Not enough variable. Give " << this->nbVar << " but need " << code << std::endl;
+        return NULL;
+    }
+}
+
+Node* BDD::buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<std::pair<std::string, int> > varfinal)
+{
+    if (i > vect.size())
+    {
         for (int c=0; c < var.size(); c++)
         {
             std::pair<int, std::string> pair1 = var[c];
@@ -350,9 +350,17 @@ Node* BDD::buildprime(std::vector<bool> vect, int i, bool print)
         if (print)
             for (int c = 0; c < tab.size(); c++)
             {
-                std::cout << tab[c] << " ";
+                if (tab[c] == "&" || tab[c] == "&&" || tab[c] == "||" || tab[c] == "|" || tab[c] == "=>" || tab[c] == "<=>" || tab[c] == "xor")
+                {
+                    std::cout << " " << tab[c] << " ";
+                }
+                else
+                {
+                    std::cout << tab[c];
+                }
             }
         bool res = eval(tab);
+
         if (print)
             std::cout << "; valeur finale :";
         if (res==false)
@@ -375,15 +383,19 @@ Node* BDD::buildprime(std::vector<bool> vect, int i, bool print)
         vect0[i-1] = true;
         std::vector<bool> vect1 = vect;
         vect1[i-1] = false;
-        Node* v0 = buildprime(vect0,i+1, print);
-        Node* v1 = buildprime(vect1,i+1, print);
-        return this->MK(i, v0, v1);
+        Node* v0 = buildprime(vect0,i+1, print, tab, var, varfinal);
+        Node* v1 = buildprime(vect1,i+1, print, tab, var, varfinal);
+
+        Node* res = this->MK(i, v0, v1);
+        return res;
     }
 }
 
 Node* BDD::restr(int indVar, bool val)
 {
-    return (res(this->getTopNode(), indVar, val));
+    this->getVector()[indVar-1] = val;
+    this->setTopNode(res(this->getTopNode(), indVar, val));
+    return (this->getTopNode());
 }
 
 Node* BDD::res(Node* node, int indVar, bool val)
@@ -413,7 +425,7 @@ void BDD::parray(std::vector<int> A, int level) {
     std::vector<std::vector<std::string> > tab = std::vector<std::vector<std::string> >(1);
     for (int i = 1; i < level; i++)
     {
-        std::string s = "[" + this->getVectVar()[i-1] + ":";
+        std::string s = "[" + this->getVectVar()[i-1]+ ":";
         if (A[i] < 0)
         {
             int nb = tab.size();
@@ -429,7 +441,20 @@ void BDD::parray(std::vector<int> A, int level) {
         }
         else
         {
-            if (A[i] == 0)
+            if (A[i] == -1)
+            {
+                if (this->getVector()[i-1])
+                    for (int j = 0; j < tab.size(); j++)
+                    {
+                        tab[j].push_back(s+"true");
+                    }
+                else
+                    for (int j = 0; j < tab.size(); j++)
+                    {
+                        tab[j].push_back(s+"false");
+                    }
+            }
+            else if (A[i] == 0)
             {
                 for (int j = 0; j < tab.size(); j++)
                 {
@@ -462,9 +487,19 @@ void BDD::parray(std::vector<int> A, int level) {
 void BDD::allsat_rec(Node* node, std::vector<int> A, int level)
 {
   int v = node->getIndice();
-  while (level < v) {
-    A[level] = -1;		/* mark redundant tests as -1 */
-    level++;
+  if (node ->isLeaf())
+  {
+    while (level < v) {
+        A[level] = -1;		/* mark redundant tests as -1 */
+        level++;
+    }
+  }
+  else
+  {
+      while (level < v) {
+        A[level] = -1;		/* mark redundant tests as -1 */
+        level++;
+    }
   }
 
   if (node->isLeaf() && node->getValue()) {
@@ -489,6 +524,8 @@ void BDD::allsat()
         printf("no solutions");
     } else {
         std::vector<int> A = std::vector<int>(this->nbVar+1);
+        for (int i = 0; i < A.size(); i++)
+            A[i] = -2;
         allsat_rec(node, A, 1);
     }
 }
@@ -550,14 +587,19 @@ Node* BDD::MK(int i, Node* l, Node* r)
 {
     if (l == r)
         return l;
-    else if (this->vectNode.count(std::make_pair(i, std::make_pair(l,r)))==1)
-        return this->vectNode.at(std::make_pair(i, std::make_pair(l,r)));
     else
     {
-        Node* node = new Node(i,l,r);
-        this->vectorNode.push_back(node);
-        this->vectNode.insert(std::make_pair(std::make_pair(i, std::make_pair(l,r)), node));
-        return node;
+        if (this->vectNode.count(std::make_pair(i, std::make_pair(l,r)))==1)
+            return this->vectNode.at(std::make_pair(i, std::make_pair(l,r)));
+        else
+        {
+
+            Node* node = new Node(i,l,r);
+            this->vectorNode.push_back(node);
+            this->vectNode.insert(std::make_pair(std::make_pair(i, std::make_pair(l,r)), node));
+
+            return node;
+        }
     }
 }
 
