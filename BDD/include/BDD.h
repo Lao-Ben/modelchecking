@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <iostream>
 #include <sstream>
 #include <iterator>
@@ -21,20 +22,24 @@ class BDD
 {
     public:
         BDD();
+        BDD(int nbVar, std::vector<std::string> vectVar, std::vector<Node*> vectorNode, std::unordered_map<size_t,Node*> vectNode, Node* nodeFalse, Node* nodeTrue, std::unordered_map<std::string, int> varorder, std::unordered_map<int, std::string> ordervar, int maxindice);
         virtual ~BDD();
         int getNbVar();
         std::string getExpression();
         std::vector<bool> getVector();
         std::vector<std::string> getVectVar();
-        std::map<std::pair<int,std::pair<Node*,Node*> >,Node*> getVectNode();
+        std::unordered_map<size_t,Node*> getVectNode();
         std::vector<Node*> getVectorNode();
+        void setVectVar(std::vector<std::string> v);
+        void setVectNode(std::unordered_map<size_t,Node*> v);
+        void setVectorNode(std::vector<Node*> v);
         void setNbVar(int nbvar);
         void setExpression(std::string expr);
         Node* build();
         Node* build(bool print);
-        Node* buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<std::pair<std::string, int> > varfinal);
+        Node* buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<int> tabtemp);
         Node* MK(int i, Node* l, Node* r);
-        Node* APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Node*>,Node*> map);
+        Node* APP(std::string op, Node* u1, Node* u2, std::unordered_map<size_t,Node*> map);
         Node* APPLY(std::string op, BDD u1, BDD u2);
         bool op(std::string o, bool b1, bool b2);
         int satcount();
@@ -50,22 +55,46 @@ class BDD
         Node* restr(int indVar, bool val);
         Node* res(Node* node, int indVar, bool val);
         void allsat();
+        void testeval(std::string e, bool val);
+        void printGraph();
+        BDD* andfonc (BDD* bdd1, std::string s);
+        BDD* andfonc (BDD* bdd1, BDD* bdd2);
+        BDD* orfonc (BDD* bdd1, std::string s);
+        BDD* orfonc (BDD* bdd1, BDD* bdd2);
+        int getMaxIndice();
+        void setMaxIndice(int m);
+        Node* getNodeFalse();
+        Node* getNodeTrue();
+        std::unordered_map<std::string, int> getVarorder();
+        std::unordered_map<int, std::string> getOrdervar();
+        void setVarorder(std::unordered_map<std::string, int> v);
+        void setOrdervar(std::unordered_map<int, std::string> o);
+        BDD* transferinfo(BDD* bdd1, BDD* bdd2);
     protected:
     private:
         std::string anysataux(Node* node);
         std::string drawbis(Node* node);
+        std::string op2(std::string o, std::string b1, std::string b2);
+        void compute2();
+        std::string comp2(std::string n1, std::string n2, std::string op);
+        void toRPN2(std::vector<std::string> tab);
         void parray(std::vector<int> A, int level);
         void allsat_rec(Node* node, std::vector<int> A, int level);
+        std::string getInfoNode(int indice);
+        void printGraphbis(Node* node, int nbesp);
         int nbVar;
         std::string expression;
         std::vector<bool> vect;
         std::vector<std::string> vectVar;
         std::vector<Node*> vectorNode;
-        std::map<std::pair<int,std::pair<Node*,Node*> >,Node*> vectNode;
-        Node* nodeFalse;
-        Node* nodeTrue;
+        std::unordered_map<size_t,Node*> vectNode;
         std::queue<std::string> m_rpn;
         Node* topNode;
+        Node* nodeFalse;
+        Node* nodeTrue;
+        std::unordered_map<std::string, int> varorder;
+        std::unordered_map<int, std::string> ordervar;
+        int maxindice;
 };
 
 #endif // BDD_H

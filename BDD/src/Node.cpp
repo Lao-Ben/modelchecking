@@ -68,32 +68,6 @@ Node* Node::getLhs()
     this->leaf = false;
 }
 
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-Node* Node::getFalseNode()
-{
-    this->setValue(false);
-    this->setLhs(NULL);
-    this->setRhs(NULL);
-    this->leaf = true;
-    return this;
-}
-
-/** @brief (one liner)
-  *
-  * (documentation goes here)
-  */
-Node* Node::getTrueNode()
-{
-    this->setValue(true);
-    this->setLhs(NULL);
-    this->setRhs(NULL);
-    this->leaf = true;
-    return this;
-}
-
 void Node::setValue(bool val)
 {
     this->value = val;

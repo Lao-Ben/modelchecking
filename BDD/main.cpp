@@ -7,21 +7,17 @@ using namespace std;
 int main()
 {
     int n  = 4;
+    BDD* bdd = new BDD();
+    bdd->setNbVar(n*n);
     // créer un flux de sortie
     std::ostringstream oss;
+    BDD* bdd1 = new BDD(bdd->getNbVar(), bdd->getVectVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice());;
+    BDD* bddtemp1;
     for (int i=0; i < n; i++)
     {
-        if (i != 0)
-        {
-            oss << " & ";
-        }
-        oss << "( ";
+        bddtemp1 = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());
         for (int j=0; j < n; j++)
         {
-            if (j != 0)
-            {
-                oss << " | ";
-            }
             oss << "( c"<<i<<j<<" & ( ";
             bool first = true;
             for (int h = 0; h < n; h++)
@@ -35,23 +31,23 @@ int main()
                 }
             }
             oss << " ) )";
+            bddtemp1 = bddtemp1->orfonc(bddtemp1, oss.str());
+            oss.str("");
+            oss.clear();
         }
-        oss << " )";
+        bdd1 = bdd1->andfonc(bdd1, bddtemp1);
+        bdd1 = bdd1->transferinfo(bddtemp1, bdd1);
+        oss.str("");
+        oss.clear();
     }
-    oss << " & ";
+    /*oss << " & ";*/
+    BDD* bdd2 = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());;
+    BDD* bddtemp2;
     for (int i=0; i < n; i++)
     {
-        if (i != 0)
-        {
-            oss << " & ";
-        }
-        oss << "( ";
+        bddtemp2 = new BDD(bdd2->getNbVar(), bdd2->getVectVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice());
         for (int j=0; j < n; j++)
         {
-            if (j != 0)
-            {
-                oss << " | ";
-            }
             oss << "( c"<<j<<i<<" & ( ";
             bool first = true;
             for (int h = 0; h < n; h++)
@@ -65,23 +61,23 @@ int main()
                 }
             }
             oss << " ) )";
+            bddtemp2 = bddtemp2->orfonc(bddtemp2, oss.str());
+            oss.str("");
+            oss.clear();
         }
-        oss << " )";
+        bdd2 = bdd2->andfonc(bdd2, bddtemp2);
+        bdd2 = bdd2->transferinfo(bddtemp2, bdd2);
+        oss.str("");
+        oss.clear();
     }
-    oss << " & ";
+    /*oss << " & ";*/
+    BDD* bdd3 = new BDD(bdd2->getNbVar(), bdd2->getVectVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice());;
+    BDD* bddtemp3;
     for (int i = 0; i < n; i++)
     {
-        if (i != 0)
-        {
-            oss << " & ";
-        }
-        oss << "( ";
+        bddtemp3 = new BDD(bdd3->getNbVar(), bdd3->getVectVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice());
         for (int j=0; j < n; j++)
         {
-            if (j != 0)
-            {
-                oss << " | ";
-            }
             oss << "( c"<<i<<j;
             std::ostringstream osstemp;
             bool first = true;
@@ -103,23 +99,23 @@ int main()
                 oss << temp << " ) )";
             else
                 oss << " )";
+            bddtemp3 = bddtemp3->orfonc(bddtemp3, oss.str());
+            oss.str("");
+            oss.clear();
         }
-        oss << " )";
+        bdd3 = bdd3->andfonc(bdd3, bddtemp3);
+        bdd3 = bdd3->transferinfo(bddtemp3, bdd3);
+        oss.str("");
+        oss.clear();
     }
-    oss << " & ";
+    /*oss << " & ";*/
+    BDD* bdd4 = new BDD(bdd3->getNbVar(), bdd3->getVectVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice());;
+    BDD* bddtemp4;
     for (int i = 0; i < n; i++)
     {
-        if (i != 0)
-        {
-            oss << " & ";
-        }
-        oss << "( ";
+        bddtemp4 = new BDD(bdd4->getNbVar(), bdd4->getVectVar(), bdd4->getVectorNode(), bdd4->getVectNode(), bdd4->getNodeFalse(), bdd4->getNodeTrue(), bdd4->getVarorder(), bdd4->getOrdervar(), bdd4->getMaxIndice());
         for (int j=0; j < n; j++)
         {
-            if (j != 0)
-            {
-                oss << " | ";
-            }
             oss << "( c"<<i<<j;
             std::ostringstream osstemp;
             bool first = true;
@@ -141,23 +137,36 @@ int main()
                 oss << temp << " ) )";
             else
                 oss << " )";
+            bddtemp4 = bddtemp4->orfonc(bddtemp4, oss.str());
+            oss.str("");
+            oss.clear();
         }
-        oss << " )";
+        bdd4 = bdd4->andfonc(bdd4, bddtemp4);
+        bdd4 = bdd4->transferinfo(bddtemp4, bdd4);
+        oss.str("");
+        oss.clear();
     }
+    bdd = bdd->andfonc(bdd, bdd1);
+    bdd = bdd->andfonc(bdd, bdd2);
+    bdd = bdd->andfonc(bdd, bdd3);
+    bdd = bdd->andfonc(bdd, bdd4);
     // récupérer une chaîne de caractères
     std::string s = oss.str();
     Node* node = new Node();
-    BDD* bdd = new BDD();
-    bdd->setExpression("( "+s+" )");
-    //bdd->setExpression("( a & ( b & c ) )");
+    //bdd->setExpression("( "+s+" )");
+    /*bdd = bdd->andfonc(bdd, std::string("( a & ( b & c ) )"));
+    bdd = bdd->orfonc(bdd, std::string("b & c"));
+    bdd = bdd->andfonc(bdd, bdd->getExpression());*/
     std::cout << "Expression : " << bdd->getExpression() << std::endl;
-    bdd->setNbVar(n*n);
 
     cout << "Debut build"<<endl;
-    node = bdd->build();
+    //bdd->testeval("c00", false);
+    //node = bdd->build();
     cout << "Fin build"<<endl;
     cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << endl;
     cout << "Une solution : " << bdd->anysat() << endl;
-    cout << bdd->draw() << endl;
+    cout << bdd->draw() << endl << endl;
+    cout << endl << endl;
+    //bdd->allsat();
     return 0;
 }

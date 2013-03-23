@@ -18,6 +18,23 @@ BDD::BDD()
     this->nodeFalse = node1;
     this->nodeTrue = node2;
     this->setNbVar(0);
+    this->maxindice = 1;
+    this->expression = "";
+}
+
+BDD::BDD(int nbVarnew, std::vector<std::string> vectVarnew, std::vector<Node*> vectorNodenew, std::unordered_map<size_t,Node*> vectNodenew, Node* nodeFalsenew, Node* nodeTruenew, std::unordered_map<std::string, int> varordernew, std::unordered_map<int, std::string> ordervarnew, int maxindicenew)
+{
+    this->nbVar = nbVarnew;
+    this->vectVar = vectVarnew;
+    this->vectorNode = vectorNodenew;
+    this->vectNode = vectNodenew;
+    this->nodeFalse = nodeFalsenew;
+    this->nodeTrue = nodeTruenew;
+    this->varorder = varordernew;
+    this->ordervar = ordervarnew;
+    this->maxindice = maxindicenew;
+    this->vect = std::vector<bool>(nbVarnew);
+    this->expression = "";
 }
 
 BDD::~BDD()
@@ -53,7 +70,7 @@ std::vector<bool> BDD::getVector()
     return this->vect;
 }
 
-std::map<std::pair<int,std::pair<Node*,Node*> >,Node*> BDD::getVectNode()
+std::unordered_map<size_t,Node*> BDD::getVectNode()
 {
     return this->vectNode;
 }
@@ -211,6 +228,20 @@ void BDD::toRPN(std::vector<std::string> tab){
 			}
             tmp.pop();
 		}
+		else
+		{
+		    //On ajoute sur la pile.
+			m_rpn.push(c);
+			//On met sur la sortie un ! si nécessaire.
+			int nbNotOp = 0;
+			while(!tmp.empty() && tmp.top() == "!") {
+				nbNotOp++;
+				tmp.pop();
+			}
+			if(nbNotOp % 2 == 1) {
+				m_rpn.push("!");
+			}
+		}
 	}
 
 	//On ajoute sur la sortie le reste de la pile.
@@ -252,6 +283,7 @@ Node* BDD::build(bool print)
                         it = tab.begin();
                         tab.insert(it+c, "!");
                         var.push_back(std::make_pair(c+1, temp));
+                        c = c + 1;
                     }
                     else
                     {
@@ -263,6 +295,7 @@ Node* BDD::build(bool print)
                         it = tab.begin();
                         tab.insert(it+c+1, "(");
                         var.push_back(std::make_pair(c+2, temp));
+                        c = c + 2;
                     }
                 }
                 else if (tmp == "(")
@@ -276,6 +309,7 @@ Node* BDD::build(bool print)
                         it = tab.begin();
                         tab.insert(it+c, "(");
                         var.push_back(std::make_pair(c+1, temp));
+                        c = c + 1;
                     }
                     else
                     {
@@ -287,6 +321,7 @@ Node* BDD::build(bool print)
                         it = tab.begin();
                         tab.insert(it+c+1, "!");
                         var.push_back(std::make_pair(c+2, temp));
+                        c = c + 2;
                     }
                 }
                 else
@@ -306,24 +341,32 @@ Node* BDD::build(bool print)
                 }
             }
         }
-        std::vector<std::pair<std::string, int> > varfinal;
-        int number =0;
+        int number = this->maxindice;
         for (int count =0; count < var.size(); count++)
         {
-            std::pair<bool,int> pair = find(varfinal, var[count].second);
-            if (pair.first==false)
+            if (varorder.count(var[count].second) != 1)
             {
-                varfinal.push_back(std::make_pair(var[count].second, number));
+                varorder.insert(std::make_pair(var[count].second, number));
+                ordervar.insert(std::make_pair(number, var[count].second));
                 number++;
             }
-            else
-            {
-                varfinal.push_back(std::make_pair(var[count].second, pair.second));
-            }
         }
-        if (vect.size() != number)
+        if (vect.size() < (number-1))
             throw number;
-        Node* n = this->buildprime(this->vect, 1, print, tab, var, varfinal);
+        this->maxindice = number;
+        this->vect = std::vector<bool>(number-1);
+        this->nodeFalse->setIndice(number);
+        this->nodeTrue->setIndice(number);
+        std::vector<int> tabtemp;
+        for (int i=0; i < var.size(); i++)
+        {
+            std::pair<int, std::string> pair1 = var[i];
+            int truepos = varorder.at(pair1.second);
+            if (std::find(tabtemp.begin(), tabtemp.end(), truepos) == tabtemp.end())
+                tabtemp.push_back(truepos);
+        }
+        std::sort (tabtemp.begin(), tabtemp.end());
+        Node* n = this->buildprime(this->vect, 1, print, tab, var, tabtemp);
         this->setTopNode(n);
         return n;
     } catch (int code) {
@@ -332,31 +375,37 @@ Node* BDD::build(bool print)
     }
 }
 
-Node* BDD::buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<std::pair<std::string, int> > varfinal)
+Node* BDD::buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<int> tabtemp)
 {
-    if (i > vect.size())
+    if (i > tabtemp.size())
     {
+        /*std::cout << var.size() << " ";
+        for (int c=0; c < var.size(); c++)
+        {
+            std::cout << var[c].first << " " << var[c].second << ";";
+        }*/
         for (int c=0; c < var.size(); c++)
         {
             std::pair<int, std::string> pair1 = var[c];
-            std::pair<std::string, int> pair2 = varfinal[c];
-            bool tmp = vect[pair2.second];
-            this->vectVar[pair2.second] = pair2.first;
+            int index = varorder.at(pair1.second)-1;
+            bool tmp = vect[index];
             if (tmp)
                 tab[pair1.first] = "true";
             else
                 tab[pair1.first] = "false";
+            //std::cout << tab[pair1.first] << "(" << pair1.second << ")";
         }
+        //std::cout << std::endl;
         if (print)
             for (int c = 0; c < tab.size(); c++)
             {
                 if (tab[c] == "&" || tab[c] == "&&" || tab[c] == "||" || tab[c] == "|" || tab[c] == "=>" || tab[c] == "<=>" || tab[c] == "xor")
                 {
-                    std::cout << " " << tab[c] << " ";
+                    std::cout << " " << tab[c] << "(" << c << ")"<< " ";
                 }
                 else
                 {
-                    std::cout << tab[c];
+                    std::cout << tab[c] << "(" << c << ")";
                 }
             }
         bool res = eval(tab);
@@ -380,13 +429,13 @@ Node* BDD::buildprime(std::vector<bool> vect, int i, bool print, std::vector<std
     else
     {
         std::vector<bool> vect0 = vect;
-        vect0[i-1] = true;
+        vect0[tabtemp[i-1]-1] = true;
         std::vector<bool> vect1 = vect;
-        vect1[i-1] = false;
-        Node* v0 = buildprime(vect0,i+1, print, tab, var, varfinal);
-        Node* v1 = buildprime(vect1,i+1, print, tab, var, varfinal);
+        vect1[tabtemp[i-1]-1] = false;
+        Node* v0 = buildprime(vect0,i+1, print, tab, var, tabtemp);
+        Node* v1 = buildprime(vect1,i+1, print, tab, var, tabtemp);
 
-        Node* res = this->MK(i, v0, v1);
+        Node* res = this->MK(tabtemp[i-1], v0, v1);
         return res;
     }
 }
@@ -425,7 +474,7 @@ void BDD::parray(std::vector<int> A, int level) {
     std::vector<std::vector<std::string> > tab = std::vector<std::vector<std::string> >(1);
     for (int i = 1; i < level; i++)
     {
-        std::string s = "[" + this->getVectVar()[i-1]+ ":";
+        std::string s = "[" + this->getOrdervar().at(i)+ ":";
         if (A[i] < 0)
         {
             int nb = tab.size();
@@ -441,20 +490,7 @@ void BDD::parray(std::vector<int> A, int level) {
         }
         else
         {
-            if (A[i] == -1)
-            {
-                if (this->getVector()[i-1])
-                    for (int j = 0; j < tab.size(); j++)
-                    {
-                        tab[j].push_back(s+"true");
-                    }
-                else
-                    for (int j = 0; j < tab.size(); j++)
-                    {
-                        tab[j].push_back(s+"false");
-                    }
-            }
-            else if (A[i] == 0)
+            if (A[i] == 0)
             {
                 for (int j = 0; j < tab.size(); j++)
                 {
@@ -486,21 +522,11 @@ void BDD::parray(std::vector<int> A, int level) {
 
 void BDD::allsat_rec(Node* node, std::vector<int> A, int level)
 {
-  int v = node->getIndice();
-  if (node ->isLeaf())
-  {
+    int v = node->getIndice();
     while (level < v) {
         A[level] = -1;		/* mark redundant tests as -1 */
         level++;
     }
-  }
-  else
-  {
-      while (level < v) {
-        A[level] = -1;		/* mark redundant tests as -1 */
-        level++;
-    }
-  }
 
   if (node->isLeaf() && node->getValue()) {
     parray(A, level);
@@ -523,7 +549,7 @@ void BDD::allsat()
     if (node->isLeaf() && (node->getValue() == false)) {
         printf("no solutions");
     } else {
-        std::vector<int> A = std::vector<int>(this->nbVar+1);
+        std::vector<int> A = std::vector<int>(this->maxindice);
         for (int i = 0; i < A.size(); i++)
             A[i] = -2;
         allsat_rec(node, A, 1);
@@ -556,12 +582,12 @@ std::string BDD::anysataux(Node* node)
             std::string str = anysataux(node->getLhs());
             if (str != "error")
             {
-                s = "["+ this->getVectVar()[node->getIndice()-1] +":true;"+str+"]";
+                s = "["+ this->getOrdervar().at(node->getIndice()) +":true;"+str+"]";
                 return (s);
             }
             else
             {
-                s = "["+ this->getVectVar()[node->getIndice()-1] +":false;"+anysataux(node->getRhs())+"]";
+                s = "["+ this->getOrdervar().at(node->getIndice()) +":false;"+anysataux(node->getRhs())+"]";
                 return (s);
             }
         }
@@ -570,17 +596,28 @@ std::string BDD::anysataux(Node* node)
             std::string str = anysataux(node->getRhs());
             if (str != "error")
             {
-                s = "["+ this->getVectVar()[node->getIndice()-1] +":false;"+str+"]";
+                s = "["+ this->getOrdervar().at(node->getIndice()) +":false;"+str+"]";
                 return (s);
             }
             else
             {
-                s = "["+ this->getVectVar()[node->getIndice()-1] +":true;"+anysataux(node->getLhs())+"]";
+                s = "["+ this->getOrdervar().at(node->getIndice()) +":true;"+anysataux(node->getLhs())+"]";
                 return (s);
             }
         }
         return "";
     }
+}
+
+size_t pair(size_t i, size_t j)
+{
+    return ((i+j)*(i+j+1)/2 + i);
+}
+
+size_t hash(int i, Node* l, Node* r)
+{
+    size_t hash = pair((size_t)i,pair((size_t)l,(size_t)r)) % 15485863;
+    return hash;
 }
 
 Node* BDD::MK(int i, Node* l, Node* r)
@@ -589,32 +626,45 @@ Node* BDD::MK(int i, Node* l, Node* r)
         return l;
     else
     {
-        if (this->vectNode.count(std::make_pair(i, std::make_pair(l,r)))==1)
-            return this->vectNode.at(std::make_pair(i, std::make_pair(l,r)));
+        size_t h = hash(i,l,r);
+        if (this->vectNode.count(h)==1)
+            return this->vectNode.at(h);
         else
         {
-
             Node* node = new Node(i,l,r);
             this->vectorNode.push_back(node);
-            this->vectNode.insert(std::make_pair(std::make_pair(i, std::make_pair(l,r)), node));
-
+            this->vectNode.insert(std::make_pair(h, node));
             return node;
         }
     }
 }
 
-Node* BDD::APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Node*>,Node*> map)
+size_t calcstring(std::string s)
 {
-    if (map.count(std::make_pair(u1,u2))==1)
+    size_t res = 0;
+    for (int i=0; i < s.size(); i++)
     {
-        return map.at(std::make_pair(u1,u2));
+        res += (size_t)s[i];
     }
+    return res;
+}
+
+size_t hashapp(std::string op, Node* u1, Node* u2)
+{
+    return (pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863);
+}
+
+Node* BDD::APP(std::string op, Node* u1, Node* u2, std::unordered_map<size_t,Node*> map)
+{
+    size_t hash = hashapp(op, u1, u2);
+    if (map.count(hash)==1)
+        return map.at(hash);
     else
     {
         Node* node;
         if (u1->isLeaf() && u2->isLeaf())
         {
-            if (this->op(op,u1->getValue(),u2->getValue()) == true)
+            if (this->op(op,u1->getValue(),u2->getValue()))
             {
                 node = this->nodeTrue;
             }
@@ -635,22 +685,8 @@ Node* BDD::APP(std::string op, Node* u1, Node* u2, std::map<std::pair<Node*, Nod
         {
             node = this->MK(u2->getIndice(), this->APP(op,u1, u2->getLhs(), map), this->APP(op,u1, u2->getRhs(), map));
         }
-        map.insert(std::make_pair(std::make_pair(u1,u2), node));
+        map.insert(std::make_pair(hash, node));
         return node;
-    }
-}
-
-void setIndLeaf(Node* node, int val)
-{
-    if (node != NULL)
-    {
-        if (node->isLeaf())
-            node->setIndice(val);
-        else
-        {
-            setIndLeaf(node->getLhs(), val);
-            setIndLeaf(node->getRhs(), val);
-        }
     }
 }
 
@@ -658,29 +694,10 @@ Node* BDD::APPLY(std::string op, BDD bdd1, BDD bdd2)
 {
     Node* u1 = bdd1.getTopNode();
     Node* u2 = bdd2.getTopNode();
-    std::cout << "(" << bdd1.getExpression() << ") " << op << " (" << bdd2.getExpression() << ")" << std::endl;
+    //std::cout << "(" << bdd1.getExpression() << ") " << op << " (" << bdd2.getExpression() << ")" << std::endl;
     this->expression = "( " + bdd1.getExpression() + " ) " + op + " ( " + bdd2.getExpression() + " )";
-    std::map<std::pair<Node*, Node*>,Node*> map;
-    int size1 = bdd1.getVector().size();
-    int size2 = bdd2.getVector().size();
-    if (size1 < size2)
-    {
-        this->vect = bdd2.getVector();
-        this->vectVar = bdd2.getVectVar();
-    }
-    else
-    {
-        this->vect = bdd1.getVector();
-        this->vectVar = bdd1.getVectVar();
-    }
-    this->nbVar = this->vect.size();
-    this->nodeFalse->setIndice(this->vect.size()+1);
-    this->nodeTrue->setIndice(this->vect.size()+1);
-    setIndLeaf(u1, this->vect.size()+1);
-    setIndLeaf(u2, this->vect.size()+1);
+    std::unordered_map<size_t,Node*> map;
     Node* node = this->APP(op, u1, u2, map);
-    setIndLeaf(u1, size1+1);
-    setIndLeaf(u2, size2+1);
     this->setTopNode(node);
     return node;
 }
@@ -743,7 +760,9 @@ int BDD::count(Node* node)
 int BDD::satcount()
 {
     Node* node = this->getTopNode();
-    return (pow(2,(node->getIndice() - 1))*count(node));
+    if (node != NULL)
+        return (pow(2,(node->getIndice() - 1))*count(node));
+    return 0;
 }
 
 Node* BDD::getTopNode()
@@ -773,7 +792,176 @@ std::string BDD::drawbis(Node* node)
     }
     else
     {
-        std::string s = this->vectVar[node->getIndice()-1];
+        std::string s = this->getOrdervar().at(node->getIndice());
         return (s + "(" + drawbis(node->getLhs())+";"+drawbis(node->getRhs())+")");
     }
+}
+
+std::string BDD::getInfoNode(int indice)
+{
+    if (ordervar.count(indice) >= 1)
+        return ordervar.at(indice);
+    return "";
+}
+
+void BDD::printGraph()
+{
+    printGraphbis(this->getTopNode(), 0);
+}
+
+void BDD::printGraphbis(Node* node, int nbesp)
+{
+    if (node->isLeaf())
+    {
+        for (int i = 0; i < nbesp; i++)
+        {
+            std::cout << "     ";
+        }
+        if (node->getValue())
+            std::cout << "true ";
+        else
+            std::cout << "false";
+        std::cout << std::endl;
+    }
+    else
+    {
+        printGraphbis(node->getLhs(), nbesp+1);
+        for (int i = 0; i < nbesp; i++)
+        {
+            std::cout << "     ";
+        }
+        std::string s = this->getInfoNode(node->getIndice());
+        int diffsize = 5 - s.length();
+        std::cout << s;
+        for (int i=0; i < diffsize; i++)
+            std::cout << " ";
+        std::cout << std::endl;
+        printGraphbis(node->getRhs(), nbesp+1);
+    }
+}
+
+int getNodeMaxDepth(Node* node, int depth) {
+	int ld, rd;
+	if (node==NULL) { return depth-1; }
+	ld = getNodeMaxDepth(node->getLhs(), depth+1);
+	rd = getNodeMaxDepth(node->getRhs(), depth+1);
+	return (ld<rd) ? rd : ld;
+}
+
+int BDD::getMaxIndice()
+{
+    return maxindice;
+}
+
+Node* BDD::getNodeFalse()
+{
+    return nodeFalse;
+}
+
+Node* BDD::getNodeTrue()
+{
+    return nodeTrue;
+}
+
+std::unordered_map<std::string, int> BDD::getVarorder()
+{
+    return varorder;
+}
+
+std::unordered_map<int, std::string> BDD::getOrdervar()
+{
+    return ordervar;
+}
+
+void BDD::setMaxIndice(int m)
+{
+    this->maxindice = m;
+}
+
+void BDD::setVarorder(std::unordered_map<std::string, int> v)
+{
+    this->varorder = v;
+}
+
+void BDD::setOrdervar(std::unordered_map<int, std::string> o)
+{
+    this->ordervar = o;
+}
+
+void BDD::setVectVar(std::vector<std::string> v)
+{
+    this->vectVar = v;
+}
+
+void BDD::setVectNode(std::unordered_map<size_t,Node*> v)
+{
+    this->vectNode = v;
+}
+void BDD::setVectorNode(std::vector<Node*> v)
+{
+    this->vectorNode = v;
+}
+
+BDD* BDD::andfonc (BDD* bdd1, std::string s)
+{
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());
+    bdd->setExpression(s);
+    bdd->build();
+    if (bdd1->getExpression() == "")
+    {
+        *bdd1 = *bdd;
+    }
+    else
+    {
+        bdd1->APPLY("&", *bdd1, *bdd);
+    }
+    return bdd1;
+}
+
+BDD* BDD::orfonc (BDD* bdd1, std::string s)
+{
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());
+    bdd->setExpression(s);
+    bdd->build();
+    if (bdd1->getExpression() == "")
+    {
+        *bdd1 = *bdd;
+    }
+    else
+    {
+        bdd1->APPLY("|", *bdd1, *bdd);
+    }
+    return bdd1;
+}
+
+BDD* BDD::andfonc (BDD* bdd1, BDD* bdd2)
+{
+    if (bdd1->getExpression() == "")
+        return bdd2;
+    else if (bdd2->getExpression() == "")
+        return bdd1;
+    bdd1->APPLY("&", *bdd1, *bdd2);
+    return bdd1;
+}
+
+BDD* BDD::orfonc (BDD* bdd1, BDD* bdd2)
+{
+    if (bdd1->getExpression() == "")
+        return bdd2;
+    else if (bdd2->getExpression() == "")
+        return bdd1;
+    bdd1->APPLY("|", *bdd1, *bdd2);
+    return bdd1;
+}
+
+BDD* BDD::transferinfo(BDD* bdd1, BDD* bdd2)
+{
+    bdd2->setNbVar(bdd1->getNbVar());
+    bdd2->setVectVar(bdd1->getVectVar());
+    bdd2->setVectorNode(bdd1->getVectorNode());
+    bdd2->setVectNode(bdd1->getVectNode());
+    bdd2->setVarorder(bdd1->getVarorder());
+    bdd2->setOrdervar(bdd1->getOrdervar());
+    bdd2->setMaxIndice(bdd1->getMaxIndice());
+    return bdd2;
 }

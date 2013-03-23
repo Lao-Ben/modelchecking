@@ -1,23 +1,24 @@
 # depslib dependency file v1.0
-1361464803 source:c:\users\thibault\documents\projet c++\bdd\src\node.cpp
+1363888222 source:c:\users\thibault\documents\projet c++\bdd\src\node.cpp
 	"../include/Node.h"
 	<stdlib.h>
 
-1361863351 c:\users\thibault\documents\projet c++\bdd\include\node.h
+1363888235 c:\users\thibault\documents\projet c++\bdd\include\node.h
 
-1363692023 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1364047665 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
 	"include/Node.h"
 	"include/BDD.h"
 
-1363686268 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1364047812 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 	<math.h>
 
-1363616732 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1363976047 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
+	<unordered_map>
 	<iostream>
 	<sstream>
 	<iterator>
@@ -29,14 +30,8 @@
 	<stdlib.h>
 	<time.h>
 	<stdio.h>
-	<windows.h>
 	<algorithm>
 	"Node.h"
-	<boost/spirit/include/qi.hpp>
-	<boost/spirit/include/phoenix.hpp>
-	<boost/spirit/include/phoenix_operator.hpp>
-	<boost/variant/recursive_wrapper.hpp>
-	<boost/lexical_cast.hpp>
 
 1361374007 c:\users\thibault\documents\projet c++\bdd\include\triplet.h
 	"Node.h"

@@ -13,8 +13,6 @@ class Node
         void setRhs(Node* r);
         int getIndice();
         void setIndice(int i);
-        Node* getTrueNode();
-        Node* getFalseNode();
         bool getValue();
         void setValue(bool val);
         bool isLeaf();

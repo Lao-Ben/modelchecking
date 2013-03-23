@@ -12,8 +12,18 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-fomit-frame-pointer" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-std=c++0x" />
+					<Add option="-ansi" />
+					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin\Release\BDD" prefix_auto="1" extension_auto="1" />
@@ -21,10 +31,15 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-std=c++0x" />
+					<Add option="-pg" />
+					<Add option="-g" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-pg -lgmon" />
 				</Linker>
 			</Target>
 		</Build>
@@ -36,6 +51,7 @@
 		</Compiler>
 		<Unit filename="include\BDD.h" />
 		<Unit filename="include\Node.h" />
+		<Unit filename="include\Parser.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src\BDD.cpp" />
 		<Unit filename="src\Node.cpp" />

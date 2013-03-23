@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
+	<ActiveTarget name="Release" />
 	<File name="include\BDD.h" open="1" top="0" tabpos="2">
-		<Cursor position="1117" topLine="31" />
+		<Cursor position="1133" topLine="26" />
 	</File>
-	<File name="include\Node.h" open="1" top="0" tabpos="4">
-		<Cursor position="622" topLine="9" />
+	<File name="include\Node.h" open="0" top="0" tabpos="4">
+		<Cursor position="561" topLine="9" />
 	</File>
 	<File name="main.cpp" open="1" top="1" tabpos="1">
-		<Cursor position="129" topLine="0" />
+		<Cursor position="3627" topLine="135" />
 	</File>
 	<File name="src\BDD.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="9823" topLine="332" />
+		<Cursor position="11911" topLine="502" />
 	</File>
 	<File name="src\Node.cpp" open="0" top="0" tabpos="2">
 		<Cursor position="1520" topLine="99" />
