@@ -5,17 +5,18 @@
 
 1363888235 c:\users\thibault\documents\projet c++\bdd\include\node.h
 
-1364047665 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1364237981 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
+	<fstream>
 	"include/Node.h"
 	"include/BDD.h"
 
-1364047812 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1364237871 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 	<math.h>
 
-1363976047 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1364237837 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<unordered_map>
@@ -30,7 +31,9 @@
 	<stdlib.h>
 	<time.h>
 	<stdio.h>
+	<fstream>
 	<algorithm>
+	<ostream>
 	"Node.h"
 
 1361374007 c:\users\thibault\documents\projet c++\bdd\include\triplet.h

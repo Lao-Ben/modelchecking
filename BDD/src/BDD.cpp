@@ -22,7 +22,7 @@ BDD::BDD()
     this->expression = "";
 }
 
-BDD::BDD(int nbVarnew, std::vector<std::string> vectVarnew, std::vector<Node*> vectorNodenew, std::unordered_map<size_t,Node*> vectNodenew, Node* nodeFalsenew, Node* nodeTruenew, std::unordered_map<std::string, int> varordernew, std::unordered_map<int, std::string> ordervarnew, int maxindicenew)
+BDD::BDD(int nbVarnew, std::vector<std::string> vectVarnew, std::vector<Node*> vectorNodenew, std::unordered_map<std::string,Node*> vectNodenew, Node* nodeFalsenew, Node* nodeTruenew, std::unordered_map<std::string, int> varordernew, std::unordered_map<int, std::string> ordervarnew, int maxindicenew, std::unordered_map<std::string,Node*> opmapnew)
 {
     this->nbVar = nbVarnew;
     this->vectVar = vectVarnew;
@@ -34,6 +34,7 @@ BDD::BDD(int nbVarnew, std::vector<std::string> vectVarnew, std::vector<Node*> v
     this->ordervar = ordervarnew;
     this->maxindice = maxindicenew;
     this->vect = std::vector<bool>(nbVarnew);
+    this->opmap = opmapnew;
     this->expression = "";
 }
 
@@ -70,7 +71,7 @@ std::vector<bool> BDD::getVector()
     return this->vect;
 }
 
-std::unordered_map<size_t,Node*> BDD::getVectNode()
+std::unordered_map<std::string,Node*> BDD::getVectNode()
 {
     return this->vectNode;
 }
@@ -614,10 +615,12 @@ size_t pair(size_t i, size_t j)
     return ((i+j)*(i+j+1)/2 + i);
 }
 
-size_t hash(int i, Node* l, Node* r)
+std::string hash(int i, Node* l, Node* r)
 {
-    size_t hash = pair((size_t)i,pair((size_t)l,(size_t)r)) % 15485863;
-    return hash;
+    std::ostringstream oss;
+    oss << i << "_" << (size_t)l << "_" << (size_t)r;
+    //size_t hash = pair((size_t)(i * 1000000),pair((size_t)l,(size_t)r)) % 15485863;
+    return oss.str();
 }
 
 Node* BDD::MK(int i, Node* l, Node* r)
@@ -626,7 +629,7 @@ Node* BDD::MK(int i, Node* l, Node* r)
         return l;
     else
     {
-        size_t h = hash(i,l,r);
+        std::string h = hash(i,l,r);
         if (this->vectNode.count(h)==1)
             return this->vectNode.at(h);
         else
@@ -646,19 +649,23 @@ size_t calcstring(std::string s)
     {
         res += (size_t)s[i];
     }
-    return res;
+    return (res * 1000000);
 }
 
-size_t hashapp(std::string op, Node* u1, Node* u2)
+std::string hashapp(std::string op, Node* u1, Node* u2)
 {
-    return (pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863);
+    std::ostringstream oss;
+    oss << op << "_" << (size_t)u1 << "_" << (size_t) u2;
+    //size_t res = pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863;
+    //std::cout << res << std::endl;
+    return (oss.str());
 }
 
-Node* BDD::APP(std::string op, Node* u1, Node* u2, std::unordered_map<size_t,Node*> map)
+Node* BDD::APP(std::string op, Node* u1, Node* u2)
 {
-    size_t hash = hashapp(op, u1, u2);
-    if (map.count(hash)==1)
-        return map.at(hash);
+    std::string hash = hashapp(op, u1, u2);
+    if (opmap.count(hash)==1)
+        return opmap.at(hash);
     else
     {
         Node* node;
@@ -673,19 +680,27 @@ Node* BDD::APP(std::string op, Node* u1, Node* u2, std::unordered_map<size_t,Nod
                 node = this->nodeFalse;
             }
         }
+        else if (u1->isLeaf())
+        {
+            node = this->MK(u2->getIndice(), this->APP(op,u1, u2->getLhs()), this->APP(op,u1, u2->getRhs()));
+        }
+        else if (u2->isLeaf())
+        {
+            node = this->MK(u1->getIndice(), this->APP(op,u1->getLhs(), u2), this->APP(op,u1->getRhs(), u2));
+        }
         else if (u1->getIndice() == u2->getIndice())
         {
-            node = this->MK(u1->getIndice(), this->APP(op,u1->getLhs(), u2->getLhs(), map), this->APP(op,u1->getRhs(), u2->getRhs(), map));
+            node = this->MK(u1->getIndice(), this->APP(op,u1->getLhs(), u2->getLhs()), this->APP(op,u1->getRhs(), u2->getRhs()));
         }
         else if (u1->getIndice() < u2->getIndice())
         {
-            node = this->MK(u1->getIndice(), this->APP(op,u1->getLhs(), u2, map), this->APP(op,u1->getRhs(), u2, map));
+            node = this->MK(u1->getIndice(), this->APP(op,u1->getLhs(), u2), this->APP(op,u1->getRhs(), u2));
         }
         else
         {
-            node = this->MK(u2->getIndice(), this->APP(op,u1, u2->getLhs(), map), this->APP(op,u1, u2->getRhs(), map));
+            node = this->MK(u2->getIndice(), this->APP(op,u1, u2->getLhs()), this->APP(op,u1, u2->getRhs()));
         }
-        map.insert(std::make_pair(hash, node));
+        opmap.insert(std::make_pair(hash, node));
         return node;
     }
 }
@@ -695,9 +710,8 @@ Node* BDD::APPLY(std::string op, BDD bdd1, BDD bdd2)
     Node* u1 = bdd1.getTopNode();
     Node* u2 = bdd2.getTopNode();
     //std::cout << "(" << bdd1.getExpression() << ") " << op << " (" << bdd2.getExpression() << ")" << std::endl;
-    this->expression = "( " + bdd1.getExpression() + " ) " + op + " ( " + bdd2.getExpression() + " )";
-    std::unordered_map<size_t,Node*> map;
-    Node* node = this->APP(op, u1, u2, map);
+    this->expression = "(" + bdd1.getExpression() + ") " + op + " (" + bdd2.getExpression() + ")";
+    Node* node = this->APP(op, u1, u2);
     this->setTopNode(node);
     return node;
 }
@@ -792,8 +806,10 @@ std::string BDD::drawbis(Node* node)
     }
     else
     {
+        std::ostringstream oss;
         std::string s = this->getOrdervar().at(node->getIndice());
-        return (s + "(" + drawbis(node->getLhs())+";"+drawbis(node->getRhs())+")");
+        oss << s << "(" << node->getIndice() << ")";
+        return (oss.str() + "(" + drawbis(node->getLhs())+";"+drawbis(node->getRhs())+")");
     }
 }
 
@@ -893,7 +909,7 @@ void BDD::setVectVar(std::vector<std::string> v)
     this->vectVar = v;
 }
 
-void BDD::setVectNode(std::unordered_map<size_t,Node*> v)
+void BDD::setVectNode(std::unordered_map<std::string,Node*> v)
 {
     this->vectNode = v;
 }
@@ -904,7 +920,7 @@ void BDD::setVectorNode(std::vector<Node*> v)
 
 BDD* BDD::andfonc (BDD* bdd1, std::string s)
 {
-    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
     bdd->setExpression(s);
     bdd->build();
     if (bdd1->getExpression() == "")
@@ -920,7 +936,7 @@ BDD* BDD::andfonc (BDD* bdd1, std::string s)
 
 BDD* BDD::orfonc (BDD* bdd1, std::string s)
 {
-    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice());
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
     bdd->setExpression(s);
     bdd->build();
     if (bdd1->getExpression() == "")
@@ -963,5 +979,142 @@ BDD* BDD::transferinfo(BDD* bdd1, BDD* bdd2)
     bdd2->setVarorder(bdd1->getVarorder());
     bdd2->setOrdervar(bdd1->getOrdervar());
     bdd2->setMaxIndice(bdd1->getMaxIndice());
+    bdd2->setOpmap(bdd1->getOpmap());
     return bdd2;
+}
+
+std::unordered_map<std::string,Node*> BDD::getOpmap()
+{
+    return this->opmap;
+}
+
+void BDD::setOpmap(std::unordered_map<std::string,Node*> v)
+{
+    this->opmap = v;
+}
+
+void getNodeAtLevel(Node* node, int level, int count, std::vector<Node*> v)
+{
+    if (level != count)
+    {
+        getNodeAtLevel(node->getLhs(), level, count+1, v);
+        getNodeAtLevel(node->getRhs(), level, count+1, v);
+    }
+    else
+    {
+        v.push_back(node);
+    }
+}
+
+Node* getNodeByIndice(Node* node, int i)
+{
+    if (node->getIndice() == i)
+        return node;
+    else if (node->isLeaf())
+    {
+        return NULL;
+    }
+    else
+    {
+        Node* n = getNodeByIndice(node->getLhs(), i);
+        if (n != NULL)
+            return n;
+        else
+            return getNodeByIndice(node->getRhs(), i);
+    }
+}
+
+void BDD::bddReduction()
+{
+    int nextid = this->maxindice;
+    Node* res = new Node();
+    for (int i=this->nbVar; i > 0; i--)
+    {
+        std::vector<Node*> vNode;
+        std::unordered_map<Node*, std::pair<int,int> > mappair;
+        getNodeAtLevel(this->topNode, i, 1, vNode);
+        for (int j=0; j < vNode.size(); j++)
+        {
+            Node* v = vNode[j];
+            if (v->getLhs()->getIndice() == v->getRhs()->getIndice())
+            {
+                v->setIndice(v->getLhs()->getIndice());
+                vNode.erase(vNode.begin()+j);
+                j = j - 1;
+            }
+            else
+            {
+                mappair.insert(std::make_pair(v, std::make_pair(v->getLhs()->getIndice(),v->getRhs()->getIndice())));
+            }
+        }
+        std::pair<int, int> oldpair = std::make_pair(0, 0);
+        for (int j = 0; j < vNode.size(); j++)
+        {
+            Node* v = vNode[j];
+            if (mappair.at(v) == oldpair)
+            {
+                v->setIndice(nextid);
+            }
+            else
+            {
+                nextid++;
+                v->setIndice(nextid);
+                oldpair = mappair.at(v);
+            }
+        }
+    }
+}
+
+void  BDD::toDot (const std::string& filename)
+{
+  std::ostringstream path;
+  path << filename << ".dot";
+  std::ofstream file ( path.str().c_str() );
+  toDot (file, this->getTopNode());
+  file.close ();
+}
+
+
+void  BDD::toDot (std::ostream& out, Node* node)
+{
+  out << "digraph BDD {" << std::endl;
+  out << "  ratio=1.0;" << std::endl;
+  _toDot (out, node);
+  out << "}" << std::endl;
+}
+
+
+void  BDD::_toDot (std::ostream& out, Node* node)
+{
+    int max = this->maxindice + 1;
+  if (node == this->nodeFalse) {
+    out << "  n" << this->maxindice << " [shape=box,label=\"false\"];" << std::endl;
+  } else if (node == this->nodeTrue) {
+    out << "  n" << max << " [shape=box,label=\"true\"];" << std::endl;
+  } else {
+    std::string name = this->ordervar.at(node->getIndice());
+    std::ostringstream  nodename;
+    nodename << "n" << node->getIndice();
+
+    out << "  " << nodename.str() << " [label=\"\\N\\n" << name << "\",fontname=\"Bitstream Vera Sans\"];" << std::endl;
+    out << "  " << nodename.str() << " -> " << "n";
+    if (node->getLhs()->isLeaf() && node->getLhs()->getValue())
+        out << max;
+    else if (node->getLhs()->isLeaf() && !node->getLhs()->getValue())
+        out << this->maxindice;
+    else
+        out << node->getLhs()->getIndice();
+    out << "[label=\"H\",color=green]" << ";" << std::endl;
+    out << "  " << nodename.str() << " -> " << "n";
+    if (node->getRhs()->isLeaf() && node->getRhs()->getValue())
+        out << max;
+    else if (node->getRhs()->isLeaf() && !node->getRhs()->getValue())
+        out << this->maxindice;
+    else
+        out << node->getRhs()->getIndice();
+    out << "[label=\"L\",color=red]" << ";" << std::endl;
+
+    _toDot(out, node->getLhs());
+    _toDot(out, node->getRhs());
+  }
 }

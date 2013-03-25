@@ -15,23 +15,25 @@
 #include<stdlib.h>
 #include<time.h>
 #include <stdio.h>
-#include <algorithm>
+#include <fstream>
+#include <algorithm>*
+#include <ostream>
 #include "Node.h"
 
 class BDD
 {
     public:
         BDD();
-        BDD(int nbVar, std::vector<std::string> vectVar, std::vector<Node*> vectorNode, std::unordered_map<size_t,Node*> vectNode, Node* nodeFalse, Node* nodeTrue, std::unordered_map<std::string, int> varorder, std::unordered_map<int, std::string> ordervar, int maxindice);
+        BDD(int nbVar, std::vector<std::string> vectVar, std::vector<Node*> vectorNode, std::unordered_map<std::string,Node*> vectNode, Node* nodeFalse, Node* nodeTrue, std::unordered_map<std::string, int> varorder, std::unordered_map<int, std::string> ordervar, int maxindice, std::unordered_map<std::string,Node*> opmap);
         virtual ~BDD();
         int getNbVar();
         std::string getExpression();
         std::vector<bool> getVector();
         std::vector<std::string> getVectVar();
-        std::unordered_map<size_t,Node*> getVectNode();
+        std::unordered_map<std::string,Node*> getVectNode();
         std::vector<Node*> getVectorNode();
         void setVectVar(std::vector<std::string> v);
-        void setVectNode(std::unordered_map<size_t,Node*> v);
+        void setVectNode(std::unordered_map<std::string,Node*> v);
         void setVectorNode(std::vector<Node*> v);
         void setNbVar(int nbvar);
         void setExpression(std::string expr);
@@ -39,7 +41,7 @@ class BDD
         Node* build(bool print);
         Node* buildprime(std::vector<bool> vect, int i, bool print, std::vector<std::string> tab, std::vector<std::pair<int, std::string> > var, std::vector<int> tabtemp);
         Node* MK(int i, Node* l, Node* r);
-        Node* APP(std::string op, Node* u1, Node* u2, std::unordered_map<size_t,Node*> map);
+        Node* APP(std::string op, Node* u1, Node* u2);
         Node* APPLY(std::string op, BDD u1, BDD u2);
         bool op(std::string o, bool b1, bool b2);
         int satcount();
@@ -70,8 +72,13 @@ class BDD
         void setVarorder(std::unordered_map<std::string, int> v);
         void setOrdervar(std::unordered_map<int, std::string> o);
         BDD* transferinfo(BDD* bdd1, BDD* bdd2);
+        std::unordered_map<std::string,Node*> getOpmap();
+        void setOpmap(std::unordered_map<std::string,Node*> v);
+        void toDot (const std::string& filename);
+        void toDot (std::ostream& out, Node* node);
     protected:
     private:
+        Node* APP2(std::string op, Node* u1, Node* u2);
         std::string anysataux(Node* node);
         std::string drawbis(Node* node);
         std::string op2(std::string o, std::string b1, std::string b2);
@@ -82,12 +89,14 @@ class BDD
         void allsat_rec(Node* node, std::vector<int> A, int level);
         std::string getInfoNode(int indice);
         void printGraphbis(Node* node, int nbesp);
+        void bddReduction();
+        void  _toDot (std::ostream& out, Node* node);
         int nbVar;
         std::string expression;
         std::vector<bool> vect;
         std::vector<std::string> vectVar;
         std::vector<Node*> vectorNode;
-        std::unordered_map<size_t,Node*> vectNode;
+        std::unordered_map<std::string,Node*> vectNode;
         std::queue<std::string> m_rpn;
         Node* topNode;
         Node* nodeFalse;
@@ -95,6 +104,7 @@ class BDD
         std::unordered_map<std::string, int> varorder;
         std::unordered_map<int, std::string> ordervar;
         int maxindice;
+        std::unordered_map<std::string,Node*> opmap;
 };
 
 #endif // BDD_H
