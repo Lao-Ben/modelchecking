@@ -655,7 +655,7 @@ size_t calcstring(std::string s)
 std::string hashapp(std::string op, Node* u1, Node* u2)
 {
     std::ostringstream oss;
-    oss << op << "_" << (size_t)u1 << "_" << (size_t) u2;
+    oss << op << u1 << u2;
     //size_t res = pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863;
     //std::cout << res << std::endl;
     return (oss.str());
