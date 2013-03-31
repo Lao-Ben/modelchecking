@@ -206,4 +206,6 @@ int execQueens()
   end = clock();
   elapsed = ((double)end - start) / CLOCKS_PER_SEC;
   std::cout << "Execution time : " << elapsed << std::endl;
+  
+  return 0;
 }
