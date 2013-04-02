@@ -20,12 +20,11 @@
 #include <string.h>
 
 
-const int NBVARS = 48 * 4;
-const std::string RED 		= "R";
-const std::string GREEN 	= "G";
-const std::string BLUE 		= "B";
-const std::string YELLOW 	= "Y";
-std::vector<std::string> vertexArray;
+const int NBVARS = 48 * 2;
+const std::string REDGREEN 		= "R";
+const std::string BLUEYELLOW 	= "B";
+
+std::map<std::string, int> colorMap;
 BDD *bdd = NULL;
 
 
@@ -54,27 +53,23 @@ BDD* edge(std::string v1, std::string v2)
   std::ostringstream constraint;
 
 //  n'ajouter que si le sommet est rencontré pour la 1e fois
-  if (std::find(vertexArray.begin(), vertexArray.end(), v1) == vertexArray.end()) {
-  	constraint << "( " << RED << v1 <<  " xor " << GREEN << v1 <<  " xor " << BLUE << v1 <<  " xor " << YELLOW << v1 <<  " )";
-  	constraint << " && ";
-  }
-  vertexArray.push_back(v1);
+//  if (std::find(vertexArray.begin(), vertexArray.end(), v1) == vertexArray.end()) {
+//  	constraint << "( " << RED << v1 <<  " xor " << GREEN << v1 <<  " xor " << BLUE << v1 <<  " xor " << YELLOW << v1 <<  " )";
+//  	constraint << " && ";
+//  }
+//  vertexArray.push_back(v1);
 
-  if (std::find(vertexArray.begin(), vertexArray.end(), v2) == vertexArray.end()) {
-	  constraint << "( " << RED << v2 <<  " xor " << GREEN << v2 <<  " xor " << BLUE << v2 <<  " xor " << YELLOW << v2 <<  " )";
-  	constraint << " && ";
-  }
-  vertexArray.push_back(v2);
+//  if (std::find(vertexArray.begin(), vertexArray.end(), v2) == vertexArray.end()) {
+//	  constraint << "( " << RED << v2 <<  " xor " << GREEN << v2 <<  " xor " << BLUE << v2 <<  " xor " << YELLOW << v2 <<  " )";
+//  	constraint << " && ";
+//  }
+//  vertexArray.push_back(v2);
   
-  constraint << "! ( ( "
-  << RED << v1
-  << " && " << RED << v2 << " ) || ( "
-  << GREEN << v1 <<
-  " && " << GREEN << v2 << " ) || ( "
-  << BLUE << v1 <<
-  " && " << BLUE << v2 << " ) || ( "
-  << YELLOW << v1 <<
-  " && " << YELLOW << v2 << " ) )";
+  constraint << "( ( "
+  << REDGREEN << v1
+  << " xor " << REDGREEN << v2 << " ) || ( "
+  << BLUEYELLOW << v1 <<
+  " xor " << BLUEYELLOW << v2 << " ) )";
 
   if (bdd == NULL)
   {
@@ -109,30 +104,72 @@ void exportGraphColors (std::string solution)
   std::string token;
   while(getline(iss, token, ';'))
   {
+    std::string prefix = token.substr(2,2);
+    
     if (hasEnding(token, "true"))
     {
-      std::ostringstream oss;
       if (hasBegining(token, "[R"))
       {
-        oss << token.substr(2,2) << " red";
-      }
-      else if (hasBegining(token, "[G"))
-      {
-        oss << token.substr(2,2) << " green";
+        if (colorMap.find(prefix) != colorMap.end())
+        {
+          colorMap.at(prefix) += 10;
+          std::cout << "10" << std::endl;
+        }
+        else
+        {
+          std::cout << "10" << std::endl;
+          colorMap.insert(std::pair<std::string, int>(prefix, 10));
+        }
       }
       else if (hasBegining(token, "[B"))
       {
-        oss << token.substr(2,2) << " blue";
+        if (colorMap.find(prefix) != colorMap.end())
+        {
+          colorMap.at(prefix) += 1;
+          std::cout << "01" << std::endl;
+        }
+        else
+        {
+          std::cout << "01" << std::endl;
+          colorMap.insert(std::pair<std::string, int>(prefix, 1));
+        }
       }
-      else if (hasBegining(token, "[Y"))
+    }
+    else
+    {
+      if (colorMap.find(prefix) == colorMap.end())
       {
-        oss << token.substr(2,2) << " yellow";
+        std::cout << "00" << std::endl;
+        colorMap.insert(std::pair<std::string, int>(prefix, 0));
       }
-      std::cout << oss.str() << std::endl;
-      outFile << oss.str() << std::endl;
-
     }
   }
+
+  std::map<std::string, int>::const_iterator it;
+  std::ostringstream oss;
+  
+  for (it = colorMap.begin(); it != colorMap.end(); ++it)
+  {
+    switch ((*it).second) {
+      case 11:
+		    oss << (*it).first << " red" << std::endl;
+        break;
+      case 10:
+        oss << (*it).first << " green" << std::endl;
+        break;
+      case 1:
+        oss << (*it).first << " blue" << std::endl;
+        break;
+      default:
+        oss << (*it).first << " yellow" << std::endl;
+        break;
+    }
+  }
+  std::cout << oss.str() << std::endl;
+
+  outFile << oss.str() << std::endl;
+
+  
   outFile.close();
 }
 
@@ -165,18 +202,18 @@ int GraphColoring::compute()
   edge("IN","KY"); edge("IN","MI"); edge("IN","OH"); edge("KS","MO"); // 42
   edge("KS","NE"); edge("KS","OK"); edge("KY","MO"); edge("KY","OH"); // 44
   edge("KY","TN"); edge("KY","VA"); edge("KY","WV"); edge("LA","MS"); // 46
-  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  // time 274 273
- // edge("MA","VT"); edge("MD","PA"); edge("MD","VA"); edge("MD","WV");
- // edge("ME","NH"); edge("MI","OH"); edge("MI","WI"); edge("MN","ND");
- // edge("MN","SD"); edge("MN","WI"); edge("MO","NE"); edge("MO","OK");
- // edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s
- // edge("MT","WY"); edge("NC","SC"); edge("NC","TN"); edge("NC","VA");
- // edge("ND","SD"); edge("NE","SD"); edge("NE","WY"); edge("NH","VT");
- // edge("NJ","NY"); edge("NJ","PA"); edge("NM","OK"); edge("NM","TX");
- // edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
- // edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
- // edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
- // edge("VA","WV");
+  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  // time 274 273      60
+  edge("MA","VT"); edge("MD","PA"); edge("MD","VA"); edge("MD","WV");
+  edge("ME","NH"); edge("MI","OH"); edge("MI","WI"); edge("MN","ND");
+  edge("MN","SD"); edge("MN","WI"); edge("MO","NE"); edge("MO","OK");
+  edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s              252s
+  edge("MT","WY"); edge("NC","SC"); edge("NC","TN"); edge("NC","VA");
+  edge("ND","SD"); edge("NE","SD"); edge("NE","WY"); edge("NH","VT"); //                          574
+  edge("NJ","NY"); edge("NJ","PA"); edge("NM","OK"); edge("NM","TX"); //                          870
+//  edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
+//  edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
+//  edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
+//  edge("VA","WV");
   
   
   //std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
