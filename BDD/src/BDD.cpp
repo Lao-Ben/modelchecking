@@ -22,10 +22,25 @@ BDD::BDD()
     this->expression = "";
 }
 
-BDD::BDD(int nbVarnew, std::vector<std::string> vectVarnew, std::vector<Node*> vectorNodenew, std::unordered_map<std::string,Node*> vectNodenew, Node* nodeFalsenew, Node* nodeTruenew, std::unordered_map<std::string, int> varordernew, std::unordered_map<int, std::string> ordervarnew, int maxindicenew, std::unordered_map<std::string,Node*> opmapnew)
+BDD::BDD(BDD& instance)
+{
+    this->nbVar = instance.getNbVar();
+    this->expression = instance.getExpression();
+    this->vect = instance.getVector();
+    this->vectorNode = instance.getVectorNode();
+    this->vectNode = instance.getVectNode();
+    this->topNode = instance.getTopNode();
+    this->nodeFalse = instance.getNodeFalse();
+    this->nodeTrue = instance.getNodeTrue();
+    this->varorder = instance.getVarorder();
+    this->ordervar = instance.getOrdervar();
+    this->maxindice = instance.getMaxIndice();
+    this->opmap = instance.getOpmap();
+}
+
+BDD::BDD(int nbVarnew, std::vector<Node*> vectorNodenew, std::unordered_map<std::string,Node*> vectNodenew, Node* nodeFalsenew, Node* nodeTruenew, std::unordered_map<std::string, int> varordernew, std::unordered_map<int, std::string> ordervarnew, int maxindicenew, std::unordered_map<std::string,Node*> opmapnew)
 {
     this->nbVar = nbVarnew;
-    this->vectVar = vectVarnew;
     this->vectorNode = vectorNodenew;
     this->vectNode = vectNodenew;
     this->nodeFalse = nodeFalsenew;
@@ -51,7 +66,6 @@ void BDD::setNbVar(int nbvar)
 {
     this->nbVar = nbvar;
     this->vect = std::vector<bool>(nbvar);
-    this->vectVar = std::vector<std::string>(nbVar);
     this->nodeFalse->setIndice(nbvar+1);
     this->nodeTrue->setIndice(nbvar+1);
 }
@@ -81,7 +95,7 @@ std::vector<Node*> BDD::getVectorNode()
     return this->vectorNode;
 }
 
-std::vector<std::string> parse(std::string l)
+std::vector<std::string> BDD::parse(std::string l)
 {
     std::stringstream ss(l);
     std::istream_iterator<std::string> begin(ss);
@@ -102,19 +116,19 @@ std::pair<bool,int> find(std::vector<std::pair<std::string, int> > vect, std::st
 }
 
 int priority(std::string op) {
-	if (op == "=>")
-    return 0;
-  if (op == "<=>")
-    return 1;
-  if (op == "xor")
-    return 2;
-  if (op == "||" || op == "|")
-    return 3;
-  if (op == "&&" || op == "&")
-    return 4;
-  if (op == "!")
-    return 5;
-  return -1;
+    if (op == "=>")
+        return 0;
+    if (op == "<=>")
+        return 1;
+    if (op == "xor")
+        return 2;
+    if (op == "||" || op == "|")
+        return 3;
+    if (op == "&&" || op == "&")
+        return 4;
+    if (op == "!")
+        return 5;
+    return -1;
 }
 
 std::string BDD::comp(std::string n1, std::string n2, std::string o) {
@@ -353,7 +367,7 @@ Node* BDD::build(bool print)
             }
         }
         if (vect.size() < (number-1))
-            throw number;
+            throw (number-1);
         this->maxindice = number;
         this->vect = std::vector<bool>(number-1);
         this->nodeFalse->setIndice(number);
@@ -380,11 +394,6 @@ Node* BDD::buildprime(std::vector<bool> vect, int i, bool print, std::vector<std
 {
     if (i > tabtemp.size())
     {
-        /*std::cout << var.size() << " ";
-        for (int c=0; c < var.size(); c++)
-        {
-            std::cout << var[c].first << " " << var[c].second << ";";
-        }*/
         for (int c=0; c < var.size(); c++)
         {
             std::pair<int, std::string> pair1 = var[c];
@@ -618,7 +627,7 @@ size_t pair(size_t i, size_t j)
 std::string hash(int i, Node* l, Node* r)
 {
     std::ostringstream oss;
-    oss << i << "_" << (size_t)l << "_" << (size_t)r;
+    oss << i << "_" << (size_t)l % 15485863 << "_" << (size_t)r % 15485863;
     //size_t hash = pair((size_t)(i * 1000000),pair((size_t)l,(size_t)r)) % 15485863;
     return oss.str();
 }
@@ -655,7 +664,7 @@ size_t calcstring(std::string s)
 std::string hashapp(std::string op, Node* u1, Node* u2)
 {
     std::ostringstream oss;
-    oss << op << "_" << (size_t)u1 << "_" << (size_t) u2;
+    oss << op << "_" << (size_t)u1 % 15485863 << "_" << (size_t) u2% 15485863;
     //size_t res = pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863;
     //std::cout << res << std::endl;
     return (oss.str());
@@ -710,15 +719,10 @@ Node* BDD::APPLY(std::string op, BDD bdd1, BDD bdd2)
     Node* u1 = bdd1.getTopNode();
     Node* u2 = bdd2.getTopNode();
     //std::cout << "(" << bdd1.getExpression() << ") " << op << " (" << bdd2.getExpression() << ")" << std::endl;
-    this->expression = "(" + bdd1.getExpression() + ") " + op + " (" + bdd2.getExpression() + ")";
+    this->expression = "( " + bdd1.getExpression() + " ) " + op + " ( " + bdd2.getExpression() + " )";
     Node* node = this->APP(op, u1, u2);
     this->setTopNode(node);
     return node;
-}
-
-std::vector<std::string> BDD::getVectVar()
-{
-    return this->vectVar;
 }
 
 bool BDD::op(std::string o, bool b1, bool b2)
@@ -808,7 +812,7 @@ std::string BDD::drawbis(Node* node)
     {
         std::ostringstream oss;
         std::string s = this->getOrdervar().at(node->getIndice());
-        oss << s << "(" << node->getIndice() << ")";
+        oss << s /*<< "(" << node->getIndice() << ")"*/;
         return (oss.str() + "(" + drawbis(node->getLhs())+";"+drawbis(node->getRhs())+")");
     }
 }
@@ -818,42 +822,6 @@ std::string BDD::getInfoNode(int indice)
     if (ordervar.count(indice) >= 1)
         return ordervar.at(indice);
     return "";
-}
-
-void BDD::printGraph()
-{
-    printGraphbis(this->getTopNode(), 0);
-}
-
-void BDD::printGraphbis(Node* node, int nbesp)
-{
-    if (node->isLeaf())
-    {
-        for (int i = 0; i < nbesp; i++)
-        {
-            std::cout << "     ";
-        }
-        if (node->getValue())
-            std::cout << "true ";
-        else
-            std::cout << "false";
-        std::cout << std::endl;
-    }
-    else
-    {
-        printGraphbis(node->getLhs(), nbesp+1);
-        for (int i = 0; i < nbesp; i++)
-        {
-            std::cout << "     ";
-        }
-        std::string s = this->getInfoNode(node->getIndice());
-        int diffsize = 5 - s.length();
-        std::cout << s;
-        for (int i=0; i < diffsize; i++)
-            std::cout << " ";
-        std::cout << std::endl;
-        printGraphbis(node->getRhs(), nbesp+1);
-    }
 }
 
 int getNodeMaxDepth(Node* node, int depth) {
@@ -904,11 +872,6 @@ void BDD::setOrdervar(std::unordered_map<int, std::string> o)
     this->ordervar = o;
 }
 
-void BDD::setVectVar(std::vector<std::string> v)
-{
-    this->vectVar = v;
-}
-
 void BDD::setVectNode(std::unordered_map<std::string,Node*> v)
 {
     this->vectNode = v;
@@ -920,7 +883,7 @@ void BDD::setVectorNode(std::vector<Node*> v)
 
 BDD* BDD::andfonc (BDD* bdd1, std::string s)
 {
-    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
     bdd->setExpression(s);
     bdd->build();
     if (bdd1->getExpression() == "")
@@ -929,6 +892,7 @@ BDD* BDD::andfonc (BDD* bdd1, std::string s)
     }
     else
     {
+        bdd1 = bdd1->transferinfo(bdd, bdd1);
         bdd1->APPLY("&", *bdd1, *bdd);
     }
     return bdd1;
@@ -936,7 +900,7 @@ BDD* BDD::andfonc (BDD* bdd1, std::string s)
 
 BDD* BDD::orfonc (BDD* bdd1, std::string s)
 {
-    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
     bdd->setExpression(s);
     bdd->build();
     if (bdd1->getExpression() == "")
@@ -945,6 +909,7 @@ BDD* BDD::orfonc (BDD* bdd1, std::string s)
     }
     else
     {
+        bdd1 = bdd1->transferinfo(bdd, bdd1);
         bdd1->APPLY("|", *bdd1, *bdd);
     }
     return bdd1;
@@ -970,10 +935,35 @@ BDD* BDD::orfonc (BDD* bdd1, BDD* bdd2)
     return bdd1;
 }
 
+BDD* BDD::implyfonc (BDD* bdd1, std::string s)
+{
+    BDD* bdd = new BDD(bdd1->getNbVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
+    bdd->setExpression(s);
+    bdd->build();
+    if (bdd1->getExpression() == "")
+    {
+        *bdd1 = *bdd;
+    }
+    else
+    {
+        bdd1->APPLY("=>", *bdd1, *bdd);
+    }
+    return bdd1;
+}
+
+BDD* BDD::implyfonc (BDD* bdd1, BDD* bdd2)
+{
+    if (bdd1->getExpression() == "")
+        return bdd2;
+    else if (bdd2->getExpression() == "")
+        return bdd1;
+    bdd1->APPLY("=>", *bdd1, *bdd2);
+    return bdd1;
+}
+
 BDD* BDD::transferinfo(BDD* bdd1, BDD* bdd2)
 {
     bdd2->setNbVar(bdd1->getNbVar());
-    bdd2->setVectVar(bdd1->getVectVar());
     bdd2->setVectorNode(bdd1->getVectorNode());
     bdd2->setVectNode(bdd1->getVectNode());
     bdd2->setVarorder(bdd1->getVarorder());
@@ -993,19 +983,6 @@ void BDD::setOpmap(std::unordered_map<std::string,Node*> v)
     this->opmap = v;
 }
 
-void getNodeAtLevel(Node* node, int level, int count, std::vector<Node*> v)
-{
-    if (level != count)
-    {
-        getNodeAtLevel(node->getLhs(), level, count+1, v);
-        getNodeAtLevel(node->getRhs(), level, count+1, v);
-    }
-    else
-    {
-        v.push_back(node);
-    }
-}
-
 Node* getNodeByIndice(Node* node, int i)
 {
     if (node->getIndice() == i)
@@ -1021,47 +998,6 @@ Node* getNodeByIndice(Node* node, int i)
             return n;
         else
             return getNodeByIndice(node->getRhs(), i);
-    }
-}
-
-void BDD::bddReduction()
-{
-    int nextid = this->maxindice;
-    Node* res = new Node();
-    for (int i=this->nbVar; i > 0; i--)
-    {
-        std::vector<Node*> vNode;
-        std::unordered_map<Node*, std::pair<int,int> > mappair;
-        getNodeAtLevel(this->topNode, i, 1, vNode);
-        for (int j=0; j < vNode.size(); j++)
-        {
-            Node* v = vNode[j];
-            if (v->getLhs()->getIndice() == v->getRhs()->getIndice())
-            {
-                v->setIndice(v->getLhs()->getIndice());
-                vNode.erase(vNode.begin()+j);
-                j = j - 1;
-            }
-            else
-            {
-                mappair.insert(std::make_pair(v, std::make_pair(v->getLhs()->getIndice(),v->getRhs()->getIndice())));
-            }
-        }
-        std::pair<int, int> oldpair = std::make_pair(0, 0);
-        for (int j = 0; j < vNode.size(); j++)
-        {
-            Node* v = vNode[j];
-            if (mappair.at(v) == oldpair)
-            {
-                v->setIndice(nextid);
-            }
-            else
-            {
-                nextid++;
-                v->setIndice(nextid);
-                oldpair = mappair.at(v);
-            }
-        }
     }
 }
 
@@ -1117,4 +1053,353 @@ void  BDD::_toDot (std::ostream& out, Node* node)
     _toDot(out, node->getLhs());
     _toDot(out, node->getRhs());
   }
+}
+
+BDD* BDD::T(int ind, int i, int j)
+{
+    Node* node = MK(ind+1, this->nodeTrue, this->nodeFalse);
+    if (ordervar.count(ind) == 0)
+    {
+        std::ostringstream oss;
+        oss << "c" << i << j;
+        ordervar.insert(std::make_pair(ind+1, oss.str()));
+        varorder.insert(std::make_pair(oss.str(), ind+1));
+    }
+    this->setTopNode(node);
+    this->expression = ordervar.at(ind+1);
+    this->maxindice = 2;
+    return this;
+}
+
+void BDD::exist(std::string var)
+{
+    if(varorder.count(var) == 1)
+    {
+        int indicevar = varorder.at(var);
+        existbis(this->topNode, indicevar);
+    }
+    else
+    {
+        std::cerr << "Pas de variable avec le nom " << var << std::endl;
+    }
+}
+
+void BDD::exist(std::vector<std::string> tab)
+{
+    for (int i = 0; i < tab.size(); i++)
+    {
+        exist(tab[i]);
+    }
+}
+
+void BDD::exist(int indicevar)
+{
+    if(ordervar.count(indicevar) == 1)
+    {
+        existbis(this->topNode, indicevar);
+    }
+    else
+    {
+        std::cerr << "Pas de variable avec ce numéro" << std::endl;
+    }
+}
+
+std::string BDD::suppocc(std::vector<std::string> tab, int indice)
+{
+    std::string s = this->ordervar.at(indice);
+    std::string res = "";
+    for (int c = 0; c < tab.size(); c++)
+    {
+        std::string t = tab[c];
+        if (t != "&" && t != "&&" && t != "||" && t != "|" && t != "!" && t != "=>" && t != "<=>" && t != "xor" && t != "(" && t != ")" && t!="true" && t!="false")
+        {
+            std::string tmp = t.substr(0,1);
+            if (tmp == "!")
+            {
+                std::string tempo = t.substr(1,1);
+                if (tempo != "(")
+                {
+                    std::string temp = t.substr(1,t.size()-1);
+                    tab[c] = temp;
+                    std::vector<std::string>::iterator it;
+                    it = tab.begin();
+                    tab.insert(it+c, "!");
+                    c = c + 1;
+                }
+                else
+                {
+                    std::string temp = t.substr(2,t.size()-2);
+                    tab[c] = temp;
+                    std::vector<std::string>::iterator it;
+                    it = tab.begin();
+                    tab.insert(it+c, "!");
+                    it = tab.begin();
+                    tab.insert(it+c+1, "(");
+                    c = c + 2;
+                }
+            }
+            else if (tmp == "(")
+            {
+                std::string tempo = t.substr(1,1);
+                if (tempo != "!")
+                {
+                    std::string temp = t.substr(1,t.size()-1);
+                    tab[c] = temp;
+                    std::vector<std::string>::iterator it;
+                    it = tab.begin();
+                    tab.insert(it+c, "(");
+                    c = c + 1;
+                }
+                else
+                {
+                    std::string temp = t.substr(2,t.size()-2);
+                    tab[c] = temp;
+                    std::vector<std::string>::iterator it;
+                    it = tab.begin();
+                    tab.insert(it+c, "(");
+                    it = tab.begin();
+                    tab.insert(it+c+1, "!");
+                    c = c + 2;
+                }
+            }
+            else
+            {
+                std::string tempo = t.substr(t.size()-1,1);
+                if (tempo == ")")
+                {
+                    std::string temp = t.substr(0,t.size()-1);
+                    tab[c] = temp;
+                    std::vector<std::string>::iterator it;
+                    it = tab.begin();
+                    tab.insert(it+c+1, ")");
+                }
+            }
+        }
+    }
+    for (int i = 0; i < tab.size(); i++)
+    {
+        if (tab[i] == s)
+        {
+            if (i+1 < tab.size() && (tab[i+1] == "&" || tab[i+1] == "|" || tab[i+1] == "xor" || tab[i+1] == "=>" || tab[i+1] == "<=>"))
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                if (i-1 > 0 && tab[i-1] == "!")
+                {
+                    tab.erase(it+i+1);
+                    tab.erase(it+i);
+                    tab.erase(it+i-1);
+                    i = i - 2;
+                }
+                else
+                {
+                    tab.erase(it+i+1);
+                    tab.erase(it+i);
+                    i = i - 1;
+                }
+            }
+            else if (i+1 < tab.size() && (tab[i+1] == ")") && i-1 >= 0 && tab[i-1] == "(")
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                tab.erase(it+i+1);
+                tab.erase(it+i);
+                tab.erase(it+i-1);
+                i = i - 2;
+            }
+            else if (i-1 >= 0 && (tab[i-1] == "&" || tab[i-1] == "|" || tab[i-1] == "xor" || tab[i-1] == "=>" || tab[i-1] == "<=>"))
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                tab.erase(it+i);
+                tab.erase(it+i-1);
+                i = i - 2;
+            }
+            else
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                tab.erase(it+i);
+                i = i - 1;
+            }
+        }
+        else if ((tab[i] == "&" || tab[i] == "|" || tab[i] == "xor" || tab[i] == "=>" || tab[i] == "<=>") && i+1 < tab.size() && tab[i+1] == "(" && i+2 < tab.size() && tab[i+2] == s)
+        {
+            if (i+3 < tab.size() && (tab[i+3] == ")"))
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                if (i-1 >= 0 && (tab[i-1] == "&" || tab[i-1] == "|" || tab[i-1] == "xor" || tab[i-1] == "=>" || tab[i-1] == "<=>"))
+                {
+                    tab.erase(it+i-1, it+i+4);
+                }
+                else if (i+4 < tab.size() && (tab[i+4] == "&" || tab[i+4] == "|" || tab[i+4] == "xor" || tab[i+4] == "=>" || tab[i+4] == "<=>"))
+                {
+                    tab.erase(it+i, it+i+5);
+                }
+            }
+        }
+        else if (tab[i] == "(" && i+1 < tab.size() && tab[i+1] == s)
+        {
+            if (i+2 < tab.size() && (tab[i+2] == ")"))
+            {
+                std::vector<std::string>::iterator it;
+                it = tab.begin();
+                if (i-1 >= 0 && (tab[i-1] == "&" || tab[i-1] == "|" || tab[i-1] == "xor" || tab[i-1] == "=>" || tab[i-1] == "<=>"))
+                {
+                    tab.erase(it+i-1, it+i+3);
+                    i = i - 2;
+                }
+                else if (i+3 < tab.size() && (tab[i+3] == "&" || tab[i+3] == "|" || tab[i+3] == "xor" || tab[i+3] == "=>" || tab[i+3] == "<=>"))
+                {
+                    tab.erase(it+i, it+i+4);
+                }
+            }
+        }
+        else
+        {
+            if (res != "")
+                res = res + " ";
+            res = res + tab[i];
+        }
+    }
+    return res;
+}
+
+Node* BDD::existbis(Node* node, int indice)
+{
+    if (node->getIndice() > indice)
+    {
+        return node;
+    }
+    else if (node->getIndice() < indice)
+    {
+        return MK(node->getIndice(), existbis(node->getLhs(), indice), existbis(node->getRhs(), indice));
+    }
+    else
+    {
+        Node* n1 = res(node->getLhs(), indice, true);
+        Node* n2 = res(node->getRhs(), indice, false);
+        BDD* bdd1 = new BDD(this->getNbVar(), this->getVectorNode(), this->getVectNode(), this->getNodeFalse(), this->getNodeTrue(), this->getVarorder(), this->getOrdervar(), this->getMaxIndice(), this->getOpmap());
+        BDD* bdd2 = new BDD(this->getNbVar(), this->getVectorNode(), this->getVectNode(), this->getNodeFalse(), this->getNodeTrue(), this->getVarorder(), this->getOrdervar(), this->getMaxIndice(), this->getOpmap());
+        std::vector<std::string> tab = parse(this->getExpression());
+        this->setExpression(suppocc(tab, indice));
+        bdd1->setTopNode(n1);
+        bdd2->setTopNode(n2);
+        bdd1->setExpression(this->getExpression());
+        bdd2->setExpression(this->getExpression());
+        APPLY("|", *bdd1, *bdd2);
+        this->setExpression(bdd1->getExpression());
+        return this->topNode;
+    }
+}
+
+void BDD::notfonc(BDD* bdd)
+{
+    bdd->setTopNode(bdd->notfoncbis(bdd->getTopNode()));
+}
+
+
+
+Node* BDD::notfoncbis(Node* node)
+{
+    Node* n1;
+    Node* n2;
+    if (node->getLhs() == this->nodeFalse)
+        n1 = this->nodeTrue;
+    else if (node->getLhs() == this->nodeTrue)
+        n1 = this->nodeFalse;
+    else
+        n1 = this->notfoncbis(node->getLhs());
+    if (node->getRhs() == this->nodeFalse)
+        n2 = this->nodeTrue;
+    else if (node->getRhs() == this->nodeTrue)
+        n2 = this->nodeFalse;
+    else
+        n2 = this->notfoncbis(node->getRhs());
+    return MK(node->getIndice(), n1, n2);
+}
+
+void BDD::composition(BDD* bdd, std::string var)
+{
+    if(varorder.count(var) == 1)
+    {
+        int indicevar = varorder.at(var);
+        compositionbis(bdd, this->topNode, indicevar);
+    }
+    else
+    {
+        std::cerr << "Pas de variable avec le nom " << var << std::endl;
+    }
+}
+
+void BDD::composition(BDD* bdd, int indicevar)
+{
+    if(ordervar.count(indicevar) == 1)
+    {
+        compositionbis(bdd, this->topNode, indicevar);
+    }
+    else
+    {
+        std::cerr << "Pas de variable avec ce numéro" << std::endl;
+    }
+}
+
+Node* BDD::compositionbis(BDD* bdd, Node* node, int indice)
+{
+    if (node->getIndice() > indice)
+    {
+        return node;
+    }
+    else if (node->getIndice() < indice)
+    {
+        return MK(node->getIndice(), compositionbis(bdd, node->getLhs(), indice), compositionbis(bdd, node->getRhs(), indice));
+    }
+    else
+    {
+        Node* n1 = res(node->getLhs(), indice, true);
+        Node* n2 = res(node->getRhs(), indice, false);
+        BDD* bdd1 = new BDD(this->getNbVar(), this->getVectorNode(), this->getVectNode(), this->getNodeFalse(), this->getNodeTrue(), this->getVarorder(), this->getOrdervar(), this->getMaxIndice(), this->getOpmap());
+        BDD* bdd2 = new BDD(this->getNbVar(), this->getVectorNode(), this->getVectNode(), this->getNodeFalse(), this->getNodeTrue(), this->getVarorder(), this->getOrdervar(), this->getMaxIndice(), this->getOpmap());
+        bdd1->setTopNode(n1);
+        bdd2->setTopNode(n2);
+        BDD* bdd3 = new BDD(bdd->getNbVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
+        bdd3->setTopNode(bdd->getTopNode());
+        bdd3->notfonc(bdd3);
+        bdd1->APPLY("&", *bdd1, *bdd);
+        bdd2->APPLY("&", *bdd2, *bdd3);
+        APPLY("|", *bdd1, *bdd2);
+        return this->topNode;
+    }
+}
+
+void BDD::rename(std::vector<std::string> v)
+{
+    int number = this->maxindice;
+    for (int count =0; count < v.size(); count++)
+    {
+        std::string s = v[count];
+        std::string sprime = s.substr(0, s.size()-1);
+        if (varorder.count(sprime) != 1)
+        {
+            varorder.insert(std::make_pair(sprime, number));
+            ordervar.insert(std::make_pair(number, sprime));
+            number++;
+        }
+    }
+    this->maxindice = number;
+    this->renamebis(v, this->getTopNode());
+}
+
+Node* BDD::renamebis(std::vector<std::string> v, Node* n)
+{
+    if (n->isLeaf())
+        return n;
+    std::string s = this->ordervar.at(n->getIndice());
+    if (std::find(v.begin(), v.end(), s) != v.end())
+    {
+        std::string sprime = s.substr(0, s.size()-1);
+        n->setIndice(varorder.at(sprime));
+    }
+    return MK(n->getIndice(), renamebis(v, n->getLhs()), renamebis(v, n->getRhs()));
 }

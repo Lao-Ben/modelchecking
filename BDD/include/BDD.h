@@ -24,15 +24,14 @@ class BDD
 {
     public:
         BDD();
-        BDD(int nbVar, std::vector<std::string> vectVar, std::vector<Node*> vectorNode, std::unordered_map<std::string,Node*> vectNode, Node* nodeFalse, Node* nodeTrue, std::unordered_map<std::string, int> varorder, std::unordered_map<int, std::string> ordervar, int maxindice, std::unordered_map<std::string,Node*> opmap);
+        BDD(int nbVar, std::vector<Node*> vectorNode, std::unordered_map<std::string,Node*> vectNode, Node* nodeFalse, Node* nodeTrue, std::unordered_map<std::string, int> varorder, std::unordered_map<int, std::string> ordervar, int maxindice, std::unordered_map<std::string,Node*> opmap);
+        BDD(BDD& instance);
         virtual ~BDD();
         int getNbVar();
         std::string getExpression();
         std::vector<bool> getVector();
-        std::vector<std::string> getVectVar();
         std::unordered_map<std::string,Node*> getVectNode();
         std::vector<Node*> getVectorNode();
-        void setVectVar(std::vector<std::string> v);
         void setVectNode(std::unordered_map<std::string,Node*> v);
         void setVectorNode(std::vector<Node*> v);
         void setNbVar(int nbvar);
@@ -63,6 +62,8 @@ class BDD
         BDD* andfonc (BDD* bdd1, BDD* bdd2);
         BDD* orfonc (BDD* bdd1, std::string s);
         BDD* orfonc (BDD* bdd1, BDD* bdd2);
+        BDD* implyfonc (BDD* bdd1, std::string s);
+        BDD* implyfonc (BDD* bdd1, BDD* bdd2);
         int getMaxIndice();
         void setMaxIndice(int m);
         Node* getNodeFalse();
@@ -76,6 +77,16 @@ class BDD
         void setOpmap(std::unordered_map<std::string,Node*> v);
         void toDot (const std::string& filename);
         void toDot (std::ostream& out, Node* node);
+        BDD* T(int ind, int i, int j);
+        void exist(std::string var);
+        void exist(int indicevar);
+        void exist(std::vector<std::string> tab);
+        void composition(BDD* bdd, std::string var);
+        void composition(BDD* bdd, int indicevar);
+        void notfonc(BDD* bdd);
+        std::string suppocc(std::vector<std::string> tab, int indice);
+        std::vector<std::string> parse(std::string l);
+        void rename(std::vector<std::string> v);
     protected:
     private:
         Node* APP2(std::string op, Node* u1, Node* u2);
@@ -89,12 +100,14 @@ class BDD
         void allsat_rec(Node* node, std::vector<int> A, int level);
         std::string getInfoNode(int indice);
         void printGraphbis(Node* node, int nbesp);
-        void bddReduction();
         void  _toDot (std::ostream& out, Node* node);
+        Node* existbis(Node* node, int indice);
+        Node* compositionbis(BDD* bdd, Node* node, int indice);
+        Node* notfoncbis(Node* node);
+        Node* renamebis(std::vector<std::string> vect, Node* n);
         int nbVar;
         std::string expression;
         std::vector<bool> vect;
-        std::vector<std::string> vectVar;
         std::vector<Node*> vectorNode;
         std::unordered_map<std::string,Node*> vectNode;
         std::queue<std::string> m_rpn;

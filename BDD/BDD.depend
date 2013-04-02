@@ -1,22 +1,10 @@
 # depslib dependency file v1.0
-1363888222 source:c:\users\thibault\documents\projet c++\bdd\src\node.cpp
-	"../include/Node.h"
-	<stdlib.h>
-
-1363888235 c:\users\thibault\documents\projet c++\bdd\include\node.h
-
-1364237981 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
-	<iostream>
-	<fstream>
-	"include/Node.h"
-	"include/BDD.h"
-
-1364237871 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1364917053 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 	<math.h>
 
-1364237837 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1364913163 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<unordered_map>
@@ -36,95 +24,23 @@
 	<ostream>
 	"Node.h"
 
-1361374007 c:\users\thibault\documents\projet c++\bdd\include\triplet.h
+1363891835 c:\users\thibault\documents\projet c++\bdd\include\node.h
+
+1363891822 source:c:\users\thibault\documents\projet c++\bdd\src\node.cpp
+	"../include/Node.h"
+	<stdlib.h>
+
+1364909003 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+	<iostream>
+	<fstream>
+	"include/Fonction.h"
+
+1364313821 c:\users\thibault\documents\projet c++\bdd\include\fonction.h
+	<iostream>
+	<fstream>
 	"Node.h"
+	"BDD.h"
 
-1361442678 source:c:\users\thibault\documents\projet c++\bdd\src\triplet.cpp
-	"../include/Triplet.h"
-
-1361664813 source:c:\users\thibault\documents\projet c++\bdd\src\bee.cpp
-	"../include/BEE.hpp"
-
-1361665062 c:\users\thibault\documents\projet c++\bdd\include\bee.hpp
-	"replace.hpp"
-	<iostream>
-	<sstream>
-	<stack>
-	<queue>
-	<map>
-	<algorithm>
-
-1310029266 c:\users\thibault\documents\projet c++\bdd\include\replace.hpp
-	<iostream>
-	<sstream>
-
-1361664204 source:c:\users\thibault\documents\projet c++\bdd\src\replace.cpp
-	"../include/replace.hpp"
-
-1361664813 c:\users\thibault\documents\projet c++\bdd\src\bee.cpp
-	"../include/BEE.hpp"
-
-1363536614 c:\users\thibault\documents\projet c++\bdd\include\parser.h
-	<boost/spirit/include/qi.hpp>
-	<boost/spirit/include/phoenix.hpp>
-	<boost/spirit/include/phoenix_operator.hpp>
-	<boost/variant/recursive_wrapper.hpp>
-	<boost/lexical_cast.hpp>
-
-1294884680 c:\users\thibault\documents\projet c++\bdd\include\boost\spirit\include\qi.hpp
-	<boost/spirit/home/qi.hpp>
-
-1302786766 c:\users\thibault\documents\projet c++\bdd\include\boost\spirit\include\phoenix.hpp
-	<boost/spirit/home/phoenix.hpp>
-	<boost/phoenix.hpp>
-
-1302786766 c:\users\thibault\documents\projet c++\bdd\include\boost\spirit\include\phoenix_operator.hpp
-	<boost/spirit/home/phoenix/operator.hpp>
-	<boost/phoenix/operator.hpp>
-
-1354981456 c:\users\thibault\documents\projet c++\bdd\include\boost\variant\recursive_wrapper.hpp
-	"boost/variant/recursive_wrapper_fwd.hpp"
-	"boost/variant/detail/move.hpp"
-	"boost/checked_delete.hpp"
-
-1356792084 c:\users\thibault\documents\projet c++\bdd\include\boost\lexical_cast.hpp
-	<boost/config.hpp>
-	<climits>
-	<cstddef>
-	<string>
-	<cstring>
-	<cstdio>
-	<typeinfo>
-	<exception>
-	<boost/limits.hpp>
-	<boost/mpl/if.hpp>
-	<boost/throw_exception.hpp>
-	<boost/type_traits/ice.hpp>
-	<boost/type_traits/is_pointer.hpp>
-	<boost/static_assert.hpp>
-	<boost/detail/lcast_precision.hpp>
-	<boost/detail/workaround.hpp>
-	<locale>
-	<strstream>
-	<sstream>
-	<cmath>
-	<istream>
-	<array>
-	<boost/array.hpp>
-	<boost/numeric/conversion/cast.hpp>
-	<boost/type_traits/make_unsigned.hpp>
-	<boost/type_traits/is_signed.hpp>
-	<boost/type_traits/is_integral.hpp>
-	<boost/type_traits/is_arithmetic.hpp>
-	<boost/type_traits/remove_pointer.hpp>
-	<boost/type_traits/has_left_shift.hpp>
-	<boost/type_traits/has_right_shift.hpp>
-	<boost/math/special_functions/sign.hpp>
-	<boost/math/special_functions/fpclassify.hpp>
-	<boost/range/iterator_range_core.hpp>
-	<boost/container/container_fwd.hpp>
-	<cwchar>
-
-1363536576 source:c:\users\thibault\documents\projet c++\bdd\src\parser.cpp
-	"../include/Parser.h"
+1364913843 source:c:\users\thibault\documents\projet c++\bdd\src\fonction.cpp
+	"../include/Fonction.h"
 
