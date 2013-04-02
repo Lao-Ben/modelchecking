@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include "include/Fonction.h"
+#include "include/Queens.h"
+#include "include/GraphColoring.h"
 
 using namespace std;
 
@@ -31,5 +33,10 @@ int main()
     std::cout << bdd->draw() << std::endl;
     std::cout << bdd3->draw() << std::endl;*/
     f->knight();
-    return 0;
+  //execQueens();
+  
+  GraphColoring *gc = new GraphColoring();
+  gc->compute();
+  
+  return 0;
 }

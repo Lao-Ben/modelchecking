@@ -627,7 +627,7 @@ size_t pair(size_t i, size_t j)
 std::string hash(int i, Node* l, Node* r)
 {
     std::ostringstream oss;
-    oss << i << "_" << (size_t)l % 15485863 << "_" << (size_t)r % 15485863;
+    oss << i << l  << r;
     //size_t hash = pair((size_t)(i * 1000000),pair((size_t)l,(size_t)r)) % 15485863;
     return oss.str();
 }
@@ -664,9 +664,7 @@ size_t calcstring(std::string s)
 std::string hashapp(std::string op, Node* u1, Node* u2)
 {
     std::ostringstream oss;
-    oss << op << "_" << (size_t)u1 % 15485863 << "_" << (size_t) u2% 15485863;
-    //size_t res = pair(calcstring(op),pair((size_t)u1, (size_t) u2)) % 15485863;
-    //std::cout << res << std::endl;
+    oss << op << u1 << u2;
     return (oss.str());
 }
 

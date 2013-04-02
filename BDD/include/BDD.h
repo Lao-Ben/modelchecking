@@ -16,7 +16,7 @@
 #include<time.h>
 #include <stdio.h>
 #include <fstream>
-#include <algorithm>*
+#include <algorithm>
 #include <ostream>
 #include "Node.h"
 
