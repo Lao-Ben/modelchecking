@@ -14,7 +14,7 @@ all: $(BIN)
 check:
 
 $(BIN): $(BDD) $(MAIN)
-	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) $(MAIN) -L ../../ -llibbdd -o $(BIN)
+	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) $(MAIN) -L ../../ -lbdd -o $(BIN)
 	@echo "The binary file named $(BIN) is created"
 
 %.o: %.cc

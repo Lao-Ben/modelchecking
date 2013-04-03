@@ -17,7 +17,7 @@ $(BIN): $(BDD)
 	ar r libbdd.a src/Node.o src/BDD.o
 	@echo "The library file named libbdd.a is created"
 
-demo:
+demo: $(BIN)
 	make -C demo/queen
 	make -C demo/knight
 	make -C demo/graph

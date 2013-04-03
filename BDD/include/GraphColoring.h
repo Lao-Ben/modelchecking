@@ -10,6 +10,7 @@
 #define __BDD2__GraphColoring__
 
 #include <iostream>
+#include "BDD.h"
 
 class GraphColoring {
 

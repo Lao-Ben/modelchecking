@@ -7,19 +7,15 @@ BDD= ../../src/Queens.o
 MAIN= main.o 
 BIN=queen
 TARBALL= bdd
-INC_PATH= -I../../include
+INC_PATH= -I../../src/
 
 all: $(BIN)
 
 check:
 
-$(BIN): $(BDD)
-	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) -lbdd -o $(BIN) main.cpp
+$(BIN): $(BDD) $(MAIN)
+	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) $(MAIN) -L ../../ -lbdd -o $(BIN)
 	@echo "The binary file named $(BIN) is created"
-
-main.o:
-	cp ../../libbdd.a .
-	$(CC) $(INC_PATH) $(CXXFLAGS) $(BDD) -lbdd -c main.cpp -o main.o
 
 %.o: %.cpp
 	$(CC) $(INC_PATH) $(CXXFLAGS) -c $< -o $@ $(CFLAGS)

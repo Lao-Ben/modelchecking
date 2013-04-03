@@ -14,6 +14,8 @@
 
 #include "../include/GraphColoring.h"
 
+#include "../include/BDD.h"
+
 #include <stdio.h>
 #include <string.h>
 

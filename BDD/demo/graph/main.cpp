@@ -7,7 +7,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	if (argc != 1)
-		std::err << "Usage : ./graph" << std::endl;
+		std::cerr << "Usage : ./graph" << std::endl;
 	else
 	{
 		GraphColoring *gc = new GraphColoring();

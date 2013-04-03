@@ -1,4 +1,4 @@
-CC= g++
+$CC= g++
 
 CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros -Ofast
 CXXFLAGS :=-std=c++0x -O3
@@ -14,7 +14,7 @@ all: $(BIN)
 check:
 
 $(BIN): $(BDD) $(MAIN)
-	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) $(MAIN) -L ../../ -llibbdd -o $(BIN)
+	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) $(MAIN) -L ../../ -lbdd -o $(BIN)
 	@echo "The binary file named $(BIN) is created"
 
 %.o: %.cc
