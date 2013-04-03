@@ -67,7 +67,7 @@ BDD* edge(std::string v1, std::string v2)
   }
   else
   {
-    bdd1 = new BDD(bdd->getNbVar(), bdd->getVectVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
+    bdd1 = new BDD(bdd->getNbVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
     bdd1->setExpression(constraint.str());
     bdd1->build();
     bdd = bdd->andfonc(bdd,	bdd1);
