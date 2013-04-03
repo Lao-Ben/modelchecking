@@ -51,19 +51,6 @@ BDD* edge(std::string v1, std::string v2)
 {
   BDD* bdd1;
   std::ostringstream constraint;
-
-//  n'ajouter que si le sommet est rencontré pour la 1e fois
-//  if (std::find(vertexArray.begin(), vertexArray.end(), v1) == vertexArray.end()) {
-//  	constraint << "( " << RED << v1 <<  " xor " << GREEN << v1 <<  " xor " << BLUE << v1 <<  " xor " << YELLOW << v1 <<  " )";
-//  	constraint << " && ";
-//  }
-//  vertexArray.push_back(v1);
-
-//  if (std::find(vertexArray.begin(), vertexArray.end(), v2) == vertexArray.end()) {
-//	  constraint << "( " << RED << v2 <<  " xor " << GREEN << v2 <<  " xor " << BLUE << v2 <<  " xor " << YELLOW << v2 <<  " )";
-//  	constraint << " && ";
-//  }
-//  vertexArray.push_back(v2);
   
   constraint << "( ( "
   << REDGREEN << v1
@@ -81,8 +68,6 @@ BDD* edge(std::string v1, std::string v2)
   else
   {
     bdd1 = new BDD(bdd->getNbVar(), bdd->getVectVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
-//    bdd1 = bdd1->andfonc(bdd1, constraint.str());
-//    bdd = bdd->andfonc(bdd, constraint.str());
     bdd1->setExpression(constraint.str());
     bdd1->build();
     bdd = bdd->andfonc(bdd,	bdd1);
@@ -90,7 +75,6 @@ BDD* edge(std::string v1, std::string v2)
   }
   
   std::cout << "build sous bdd : " << v1 << "," << v2 << std::endl;
-//  std::cout << "Nombre de solution satisfaisante pour sous bdd: " << bdd->satcount() << std::endl;
 	return bdd;
 }
 
@@ -201,19 +185,19 @@ int GraphColoring::compute()
   edge("IL","IN"); edge("IL","KY"); edge("IL","MO"); edge("IL","WI"); // 40
   edge("IN","KY"); edge("IN","MI"); edge("IN","OH"); edge("KS","MO"); // 42
   edge("KS","NE"); edge("KS","OK"); edge("KY","MO"); edge("KY","OH"); // 44
-  edge("KY","TN"); edge("KY","VA"); edge("KY","WV"); edge("LA","MS"); // 46
-  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  // time 274 273      60
+  edge("KY","TN"); edge("KY","VA"); edge("KY","WV"); edge("LA","MS"); // 46                         2.2GHz      3.4GHz
+  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  // time 274 273        60          57
   edge("MA","VT"); edge("MD","PA"); edge("MD","VA"); edge("MD","WV");
   edge("ME","NH"); edge("MI","OH"); edge("MI","WI"); edge("MN","ND");
   edge("MN","SD"); edge("MN","WI"); edge("MO","NE"); edge("MO","OK");
-  edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s              252s
+  edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s              252s          231
   edge("MT","WY"); edge("NC","SC"); edge("NC","TN"); edge("NC","VA");
   edge("ND","SD"); edge("NE","SD"); edge("NE","WY"); edge("NH","VT"); //                          574
   edge("NJ","NY"); edge("NJ","PA"); edge("NM","OK"); edge("NM","TX"); //                          870
-//  edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
-//  edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
-//  edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
-//  edge("VA","WV");
+  edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
+  edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
+  edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
+  edge("VA","WV");
   
   
   //std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
