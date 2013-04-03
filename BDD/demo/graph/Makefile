@@ -1,6 +1,6 @@
 $CC= g++
 
-CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros -Ofast
+CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros
 CXXFLAGS :=-std=c++0x -O3
 LDFLAGS := 
 BDD= ../../src/GraphColoring.o
