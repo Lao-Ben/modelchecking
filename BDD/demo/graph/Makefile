@@ -1,4 +1,4 @@
-$CC= g++
+CC= g++
 
 CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros
 CXXFLAGS :=-std=c++0x -O3
