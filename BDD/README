@@ -8,13 +8,23 @@ Thibault Lapassade
 Fabrice Rougeau
 Benjamin Lefebvre
 
+
 Pour lancer le projet : make
+
 
 Pour lancer les demos :
 Allez dans le repertoire demo et chaque demo se trouve dans le dossier correspondant.
+
 Pour la demo du queen :
 ./queen taille anysat ou allsat ou satcount
 	ex : ./queen 8 anysat
+
 Pour la demo du knight :
 ./knight taille
 	ex : ./knight 4
+	
+Pour la demo de coloration de graphe :
+./graphcoloring && color.sh
+
+ce programme ne colore pas tous le graphe (une partie des fonctions edge a ete commentee) car il faudrait 80mn et 22Go de RAM pour obtenir le resultat.
+les fichiers full_graph.data et full_colored presents dans le dossier demo/graph sont le resultat du programme pour tous les etats.
