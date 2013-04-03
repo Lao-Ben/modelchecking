@@ -12,10 +12,10 @@
 #include <iostream>
 
 class GraphColoring {
-  
+
 public:
-  const int vertex = 4;
-  
+  static const int vertex = 4;
+
 //  const std::string formula ="\
 ( Ral xor Gal xor Bal xor Yal ) \
 && ( Rfl xor Gfl xor Bfl xor Yfl ) \
@@ -30,9 +30,9 @@ public:
 \
 && ( ! ( ( Rfl && Rga ) || ( Gfl && Gga ) || ( Bfl && Bga ) || ( Yfl && Yga ) ) ) \
 ";
-  
+
   //GraphColoring();
-  
+
   int compute();
   void toFile(std::string filename);
 };

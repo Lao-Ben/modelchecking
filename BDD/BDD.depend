@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1364917053 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
+1364978166 source:c:\users\thibault\documents\projet c++\bdd\src\bdd.cpp
 	"../include/BDD.h"
 	<stdlib.h>
 	<math.h>
 
-1364913163 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
+1364970940 c:\users\thibault\documents\projet c++\bdd\include\bdd.h
 	<vector>
 	<map>
 	<unordered_map>
@@ -30,10 +30,12 @@
 	"../include/Node.h"
 	<stdlib.h>
 
-1364909003 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
+1364977595 source:c:\users\thibault\documents\projet c++\bdd\main.cpp
 	<iostream>
 	<fstream>
 	"include/Fonction.h"
+	"include/Queens.h"
+	"include/GraphColoring.h"
 
 1364313821 c:\users\thibault\documents\projet c++\bdd\include\fonction.h
 	<iostream>
@@ -41,6 +43,24 @@
 	"Node.h"
 	"BDD.h"
 
-1364913843 source:c:\users\thibault\documents\projet c++\bdd\src\fonction.cpp
+1364977485 source:c:\users\thibault\documents\projet c++\bdd\src\fonction.cpp
 	"../include/Fonction.h"
+
+1364925509 c:\users\thibault\documents\projet c++\bdd\include\queens.h
+	<iostream>
+	<fstream>
+	"Node.h"
+	"BDD.h"
+
+1364919866 c:\users\thibault\documents\projet c++\bdd\include\graphcoloring.h
+	<iostream>
+
+1364920068 source:c:\users\thibault\documents\projet c++\bdd\src\graphcoloring.cpp
+	"../include/GraphColoring.h"
+	"../include/BDD.h"
+	<stdio.h>
+	<string.h>
+
+1364925499 source:c:\users\thibault\documents\projet c++\bdd\src\queens.cpp
+	"../include/Queens.h"
 

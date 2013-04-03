@@ -8,7 +8,7 @@ using namespace std;
 
 int main()
 {
-    Fonction* f = new Fonction(4);
+    Fonction* f = new Fonction(6);
     //f->queen();
     /*BDD* bdd = new BDD();
     bdd->setNbVar(6);
@@ -17,8 +17,7 @@ int main()
     std::cout << bdd->getExpression() << std::endl;
     std::cout << bdd->draw() << std::endl;
     std::cout << bdd->satcount() << std::endl;
-    bdd->setExpression("a & ( c | d ) | b & ( e | f )");
-    bdd->build();
+    bdd->restr(2, false);
     std::cout << bdd->getExpression() << std::endl;
     std::cout << bdd->draw() << std::endl;
     std::cout << bdd->satcount() << std::endl;*/
@@ -33,10 +32,10 @@ int main()
     std::cout << bdd->draw() << std::endl;
     std::cout << bdd3->draw() << std::endl;*/
     f->knight();
-  //execQueens();
-  
-  GraphColoring *gc = new GraphColoring();
-  gc->compute();
-  
+  //execQueens(8);
+
+  /*GraphColoring *gc = new GraphColoring();
+  gc->compute();*/
+
   return 0;
 }

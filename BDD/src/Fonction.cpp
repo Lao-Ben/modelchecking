@@ -225,22 +225,22 @@ int Fonction::knight()
 {
     int n = this->size;
     bool isvalid = false;
-    for (int x = 0; x < n; x++)
+    /*for (int x = 0; x < n; x++)
     {
         for (int y = 0; y < n; y++)
-        {
+        {*/
             BDD* pb = new BDD();
             pb->setNbVar(2*n*n);
-            B(pb, x, y, n);
+            B(pb, 0, 0, n);
             BDD* pb1 = new BDD();
             pb1->setExpression("");
             pb1->setTopNode(NULL);
             std::unordered_map<std::string, std::pair<int, int> > map;
             std::vector<std::string> vect;
             std::ostringstream varname;
-            varname << "c" << x << y;
+            varname << "c" << 0 << 0;
             vect.push_back(varname.str());
-            map.insert(std::make_pair(varname.str(), std::make_pair(x, y)));
+            map.insert(std::make_pair(varname.str(), std::make_pair(0, 0)));
             int count = 1;
             std::string spb = pb->draw();
             std::string spb1 = pb1->draw();
@@ -277,23 +277,28 @@ int Fonction::knight()
                     bddtemp4 = bddtemp4->andfonc(bddtemp4, tmp.str());
                     bdd = bdd->orfonc(bdd, bddtemp4);
                     bdd = bdd->transferinfo(bddtemp4, bdd);
+                    //std::cout << "bdd : " << bdd->draw() << std::endl;
                     tmp << temp.str() << " ) )";
                     trans << tmp.str();
                 }
-                std::cout << bdd->getExpression() << std::endl;
+                //std::cout << bdd->getExpression() << std::endl;
                 free(pb1);
                 pb1 = new BDD(*pb);
                 BDD tmpbdd = *pb;
                 pb1 = pb1->andfonc(bdd, &tmpbdd);
                 pb1 = pb1->transferinfo(bdd, pb1);
+                //std::cout << "after and" << std::endl;
                 pb1->exist(vecttemp);
-                std::cout << pb1->getExpression() << std::endl;
+                //std::cout << "after exist : " << pb1->draw() << std::endl;
+                //std::cout << pb1->getExpression() << std::endl;
                 pb1->rename(vectprime);
                 pb1 = pb1->orfonc(pb1, pb);
+                pb = pb->transferinfo(pb1, pb);
+                //std::cout << "after or" << std::endl;
                 spb = pb->draw();
                 spb1 = pb1->draw();
-                std::cout << spb << std::endl;
-                std::cout << spb1 << std::endl;
+                //std::cout << spb << std::endl;
+                //std::cout << spb1 << std::endl;
                 if (spb == spb1)
                     break;
                 free(pb);
@@ -303,14 +308,13 @@ int Fonction::knight()
             if ((pb->getMaxIndice()-1) == (2*n*n))
             {
                 isvalid = true;
-                break;
             }
             free(pb);
             free(pb1);
-        }
+        /*}
         if (isvalid)
             break;
-    }
+    }*/
     if (isvalid)
         std::cout << "Bravo vous avez réussit !" << std::endl;
     else

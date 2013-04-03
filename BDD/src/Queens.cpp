@@ -9,14 +9,13 @@
 #include "../include/Queens.h"
 
 
-int execQueens()
+int execQueens(int n)
 {
   // clocks for performance analysis
   clock_t start, end;
 	double elapsed;
   start = clock();
-  
-  int n  = 8;
+
   std::ostringstream namefich;
   BDD* bdd = new BDD();
   bdd->setNbVar(n*n);
@@ -28,11 +27,11 @@ int execQueens()
   std::ofstream fichier(namefichstr, std::ios::out | std::ios::trunc);
   namefich.str("");
   namefich.clear();
-  BDD* bdd1 = new BDD(bdd->getNbVar(), bdd->getVectVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
+  BDD* bdd1 = new BDD(bdd->getNbVar(), bdd->getVectorNode(), bdd->getVectNode(), bdd->getNodeFalse(), bdd->getNodeTrue(), bdd->getVarorder(), bdd->getOrdervar(), bdd->getMaxIndice(), bdd->getOpmap());
   BDD* bddtemp1;
   for (int i=0; i < n; i++)
   {
-    bddtemp1 = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
+    bddtemp1 = new BDD(bdd1->getNbVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
     for (int j=0; j < n; j++)
     {
       oss << "( c"<<i<<j<<" & ";
@@ -59,11 +58,11 @@ int execQueens()
   }
   std::cout << "fin premier bdd" << std::endl;
   /*oss << " & ";*/
-  BDD* bdd2 = new BDD(bdd1->getNbVar(), bdd1->getVectVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
+  BDD* bdd2 = new BDD(bdd1->getNbVar(), bdd1->getVectorNode(), bdd1->getVectNode(), bdd1->getNodeFalse(), bdd1->getNodeTrue(), bdd1->getVarorder(), bdd1->getOrdervar(), bdd1->getMaxIndice(), bdd1->getOpmap());
   BDD* bddtemp2;
   for (int i=0; i < n; i++)
   {
-    bddtemp2 = new BDD(bdd2->getNbVar(), bdd2->getVectVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice(), bdd2->getOpmap());
+    bddtemp2 = new BDD(bdd2->getNbVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice(), bdd2->getOpmap());
     for (int j=0; j < n; j++)
     {
       oss << "( c"<<j<<i<<" & ";
@@ -90,11 +89,11 @@ int execQueens()
   }
   std::cout << "fin second bdd" << std::endl;
   /*oss << " & ";*/
-  BDD* bdd3 = new BDD(bdd2->getNbVar(), bdd2->getVectVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice(), bdd2->getOpmap());
+  BDD* bdd3 = new BDD(bdd2->getNbVar(), bdd2->getVectorNode(), bdd2->getVectNode(), bdd2->getNodeFalse(), bdd2->getNodeTrue(), bdd2->getVarorder(), bdd2->getOrdervar(), bdd2->getMaxIndice(), bdd2->getOpmap());
   BDD* bddtemp3;
   for (int i = 0; i < n; i++)
   {
-    bddtemp3 = new BDD(bdd3->getNbVar(), bdd3->getVectVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice(), bdd3->getOpmap());
+    bddtemp3 = new BDD(bdd3->getNbVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice(), bdd3->getOpmap());
     for (int j=0; j < n; j++)
     {
       oss << "( c"<<i<<j;
@@ -129,11 +128,11 @@ int execQueens()
   }
   std::cout << "fin troisiËme bdd" << std::endl;
   /*oss << " & ";*/
-  BDD* bdd4 = new BDD(bdd3->getNbVar(), bdd3->getVectVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice(), bdd3->getOpmap());
+  BDD* bdd4 = new BDD(bdd3->getNbVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice(), bdd3->getOpmap());
   BDD* bddtemp4;
   for (int i = 0; i < n; i++)
   {
-    bddtemp4 = new BDD(bdd4->getNbVar(), bdd4->getVectVar(), bdd4->getVectorNode(), bdd4->getVectNode(), bdd4->getNodeFalse(), bdd4->getNodeTrue(), bdd4->getVarorder(), bdd4->getOrdervar(), bdd4->getMaxIndice(), bdd4->getOpmap());
+    bddtemp4 = new BDD(bdd4->getNbVar(), bdd4->getVectorNode(), bdd4->getVectNode(), bdd4->getNodeFalse(), bdd4->getNodeTrue(), bdd4->getVarorder(), bdd4->getOrdervar(), bdd4->getMaxIndice(), bdd4->getOpmap());
     for (int j=0; j < n; j++)
     {
       oss << "( c"<<i<<j;
@@ -186,7 +185,7 @@ int execQueens()
    bdd = bdd->orfonc(bdd, std::string("b & c"));
    bdd = bdd->andfonc(bdd, bdd->getExpression());*/
   //std::cout << "Expression : " << bdd->getExpression() << std::endl;
-  
+
   std::cout << "Debut build"<< std::endl;
   //bdd->testeval("c00", false);
   //node = bdd->build();
@@ -199,13 +198,13 @@ int execQueens()
   fichier << std::endl;
   //bdd->allsat();
   bdd->toDot("graph");
-  
-  
-  
+
+
+
   // performance analysis
   end = clock();
   elapsed = ((double)end - start) / CLOCKS_PER_SEC;
   std::cout << "Execution time : " << elapsed << std::endl;
-  
+
   return 0;
 }
