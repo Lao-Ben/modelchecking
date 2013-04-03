@@ -121,7 +121,7 @@ void exportGraphColors (std::string solution)
     }
     else
     {
-      if (colorMap.find(prefix) == colorMap.end())
+      if (prefix != "]]" && colorMap.find(prefix) == colorMap.end())
       {
         std::cout << "00" << std::endl;
         colorMap.insert(std::pair<std::string, int>(prefix, 0));
@@ -151,7 +151,7 @@ void exportGraphColors (std::string solution)
   }
   std::cout << oss.str() << std::endl;
 
-  outFile << oss.str() << std::endl;
+  outFile << oss.str();
 
 
   outFile.close();
@@ -186,18 +186,18 @@ int GraphColoring::compute()
   edge("IN","KY"); edge("IN","MI"); edge("IN","OH"); edge("KS","MO"); // 42
   edge("KS","NE"); edge("KS","OK"); edge("KY","MO"); edge("KY","OH"); // 44
   edge("KY","TN"); edge("KY","VA"); edge("KY","WV"); edge("LA","MS"); // 46                         2.2GHz      3.4GHz
-  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  // time 274 273        60          57
-  edge("MA","VT"); edge("MD","PA"); edge("MD","VA"); edge("MD","WV");
-  edge("ME","NH"); edge("MI","OH"); edge("MI","WI"); edge("MN","ND");
-  edge("MN","SD"); edge("MN","WI"); edge("MO","NE"); edge("MO","OK");
-  edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s              252s          231
-  edge("MT","WY"); edge("NC","SC"); edge("NC","TN"); edge("NC","VA");
-  edge("ND","SD"); edge("NE","SD"); edge("NE","WY"); edge("NH","VT"); //                          574
-  edge("NJ","NY"); edge("NJ","PA"); edge("NM","OK"); edge("NM","TX"); //                          870
-  edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
-  edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
-  edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
-  edge("VA","WV");
+  edge("LA","TX"); edge("MA","NH"); edge("MA","NY"); edge("MA","RI"); // 48  //                     60          57
+//  edge("MA","VT"); edge("MD","PA"); edge("MD","VA"); edge("MD","WV");
+//  edge("ME","NH"); edge("MI","OH"); edge("MI","WI"); edge("MN","ND");
+//  edge("MN","SD"); edge("MN","WI"); edge("MO","NE"); edge("MO","OK");
+//  edge("MO","TN"); edge("MS","TN"); edge("MT","ND"); edge("MT","SD"); // time : 800s              252s          231
+//  edge("MT","WY"); edge("NC","SC"); edge("NC","TN"); edge("NC","VA");
+//  edge("ND","SD"); edge("NE","SD"); edge("NE","WY"); edge("NH","VT"); //                          574
+//  edge("NJ","NY"); edge("NJ","PA"); edge("NM","OK"); edge("NM","TX"); //                          870
+//  edge("NV","OR"); edge("NV","UT"); edge("NY","PA"); edge("NY","VT");
+//  edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
+//  edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
+//  edge("VA","WV");
 
 
   //std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
