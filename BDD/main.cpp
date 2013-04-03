@@ -1,14 +1,13 @@
 #include <iostream>
 #include <fstream>
-#include "include/Fonction.h"
 #include "include/Queens.h"
+#include "include/Knight.h"
 #include "include/GraphColoring.h"
 
 using namespace std;
 
 int main()
 {
-    Fonction* f = new Fonction(6);
     //f->queen();
     /*BDD* bdd = new BDD();
     bdd->setNbVar(6);
@@ -31,8 +30,12 @@ int main()
     bdd3->notfonc(bdd3);
     std::cout << bdd->draw() << std::endl;
     std::cout << bdd3->draw() << std::endl;*/
-    f->knight();
+    //f->knight();
   //execQueens(8);
+  std::string s = "0";
+  int value = atoi(s.c_str());
+  std::cout << value << std::endl;
+  execKnight(value);
 
   /*GraphColoring *gc = new GraphColoring();
   gc->compute();*/

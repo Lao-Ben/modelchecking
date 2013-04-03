@@ -1,26 +1,25 @@
 CC= g++
 
-CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros
-CXXFLAGS := -std=c++0x -O3
+CFLAGS= -Wall -Wextra -pedantic -Wno-long-long -Wno-variadic-macros -Ofast
+CXXFLAGS :=-std=c++0x -O3
 LDFLAGS := 
-BDD= src/Node.o src/BDD.o
+BDD= ../../src/Queens.o
 MAIN= main.o 
-BIN=bdd
+BIN=queen
 TARBALL= bdd
-INC_PATH= -I src/
+INC_PATH= -I../../include
 
-all: $(BIN) demo
+all: $(BIN)
 
 check:
 
 $(BIN): $(BDD)
-	ar r libbdd.a src/Node.o src/BDD.o
-	@echo "The library file named libbdd.a is created"
+	$(CC) $(CFLAGS) $(CXXFLAGS) $(INC_PATH) $(LDFLAGS) $(BDD) -lbdd -o $(BIN) main.cpp
+	@echo "The binary file named $(BIN) is created"
 
-demo:
-	make -C demo/queen
-	make -C demo/knight
-	make -C demo/graph
+main.o:
+	cp ../../libbdd.a .
+	$(CC) $(INC_PATH) $(CXXFLAGS) $(BDD) -lbdd -c main.cpp -o main.o
 
 %.o: %.cpp
 	$(CC) $(INC_PATH) $(CXXFLAGS) -c $< -o $@ $(CFLAGS)
@@ -30,8 +29,7 @@ clean:
 	@find . -name '*.~' -delete
 	@find . -name '#*#' -delete
 	@find . -name '.*.swp' -delete
-	@find . -name '*.a' -delete
-	@echo "cleaned *.o *.a *.~ #*# and .*.swp"
+	@echo "cleaned *.o *.~ #*# and .*.swp"
 
 distclean: clean
 	@rm -f $(BIN)
