@@ -133,9 +133,9 @@ int execKnight(int n)
             break;
     }*/
     if (isvalid)
-        std::cout << "Bravo vous avez réussit !" << std::endl;
+        std::cout << "Bravo vous avez une solution !" << std::endl;
     else
-        std::cout << "Désolé vous avez un point fixe !" << std::endl;
+        std::cout << "Desole vous avez un point fixe !" << std::endl;
     /*cout << "expression: " << pb->getExpression() << endl;
     cout << "Nombre de solution satisfaisante pour pb: " << pb->satcount() << endl;
     cout << "apply : " << pb->draw() << std::endl << std::endl;

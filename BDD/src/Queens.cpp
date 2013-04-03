@@ -20,7 +20,6 @@ int execQueens(int n, std::string com)
   BDD* bdd = new BDD();
   bdd->setNbVar(n*n);
   int pos = 0;
-  // crÈer un flux de sortie
   std::ostringstream oss;
   namefich << "test" << pos << ".txt";
   std::string namefichstr = namefich.str();
@@ -177,9 +176,12 @@ int execQueens(int n, std::string com)
   if (com == "satcount")
     std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
   else if (com == "anysat")
-    std::cout << "Une solution : " << bdd->anysat() << std::endl;
+    std::cout << "Une solution: " << bdd->anysat() << std::endl;
   else if (com == "allsat")
+  {
+	std::cout << "Toutes les solutions:" << std::endl;
     bdd->allsat();
+  }
 
 
 
