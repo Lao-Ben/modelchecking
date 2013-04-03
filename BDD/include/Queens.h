@@ -14,6 +14,6 @@
 #include "Node.h"
 #include "BDD.h"
 
-int execQueens();
+int execQueens(int n);
 
 #endif /* !Queens_h_  */

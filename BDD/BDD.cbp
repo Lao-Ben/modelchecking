@@ -12,12 +12,9 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-fomit-frame-pointer" />
-					<Add option="-fexpensive-optimizations" />
 					<Add option="-Os" />
 					<Add option="-O3" />
 					<Add option="-std=c++0x" />
-					<Add option="-ansi" />
 					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
@@ -50,10 +47,11 @@
 			<Add option="-fexceptions -Wabi" />
 		</Compiler>
 		<Unit filename="include\BDD.h" />
+		<Unit filename="include\Fonction.h" />
 		<Unit filename="include\Node.h" />
-		<Unit filename="include\Parser.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src\BDD.cpp" />
+		<Unit filename="src\Fonction.cpp" />
 		<Unit filename="src\Node.cpp" />
 		<Extensions>
 			<code_completion />
