@@ -14,6 +14,6 @@
 #include "Node.h"
 #include "BDD.h"
 
-int execQueens(int n);
+int execQueens(int n, std::string com);
 
 #endif /* !Queens_h_  */
