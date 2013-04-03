@@ -97,11 +97,9 @@ void exportGraphColors (std::string solution)
         if (colorMap.find(prefix) != colorMap.end())
         {
           colorMap.at(prefix) += 10;
-          std::cout << "10" << std::endl;
         }
         else
         {
-          std::cout << "10" << std::endl;
           colorMap.insert(std::pair<std::string, int>(prefix, 10));
         }
       }
@@ -110,11 +108,9 @@ void exportGraphColors (std::string solution)
         if (colorMap.find(prefix) != colorMap.end())
         {
           colorMap.at(prefix) += 1;
-          std::cout << "01" << std::endl;
         }
         else
         {
-          std::cout << "01" << std::endl;
           colorMap.insert(std::pair<std::string, int>(prefix, 1));
         }
       }
@@ -123,7 +119,6 @@ void exportGraphColors (std::string solution)
     {
       if (prefix != "]]" && colorMap.find(prefix) == colorMap.end())
       {
-        std::cout << "00" << std::endl;
         colorMap.insert(std::pair<std::string, int>(prefix, 0));
       }
     }
