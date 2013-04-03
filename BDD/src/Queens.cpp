@@ -9,7 +9,7 @@
 #include "../include/Queens.h"
 
 
-int execQueens(int n)
+int execQueens(int n, std::string com)
 {
   // clocks for performance analysis
   clock_t start, end;
@@ -126,7 +126,7 @@ int execQueens(int n)
     oss.str("");
     oss.clear();
   }
-  std::cout << "fin troisiËme bdd" << std::endl;
+  std::cout << "fin troisieme bdd" << std::endl;
   /*oss << " & ";*/
   BDD* bdd4 = new BDD(bdd3->getNbVar(), bdd3->getVectorNode(), bdd3->getVectNode(), bdd3->getNodeFalse(), bdd3->getNodeTrue(), bdd3->getVarorder(), bdd3->getOrdervar(), bdd3->getMaxIndice(), bdd3->getOpmap());
   BDD* bddtemp4;
@@ -165,7 +165,7 @@ int execQueens(int n)
     oss.str("");
     oss.clear();
   }
-  std::cout << "fin quatriËme bdd" << std::endl;
+  std::cout << "fin quatrieme bdd" << std::endl;
   bdd = bdd->andfonc(bdd, bdd1);
   std::cout << "fin apply1" << std::endl;
   bdd = bdd->andfonc(bdd, bdd2);
@@ -174,30 +174,12 @@ int execQueens(int n)
   std::cout << "fin apply3" << std::endl;
   bdd = bdd->andfonc(bdd, bdd4);
   std::cout << "fin apply4" << std::endl;
-  //std::cout << "apply : " << bdd->getExpression() << std::endl << bdd-> () << std::endl << std::endl;
-  std::cout << "apply : " << bdd->getExpression() << std::endl << bdd->draw() << std::endl << std::endl;
-  fichier << "apply : " << bdd->getExpression() << std::endl << bdd->draw() << std::endl << std::endl;
-  // rÈcupÈrer une chaÓne de caractËres
-  std::string s = oss.str();
-  Node* node = new Node();
-  //bdd->setExpression("( "+s+" )");
-  /*bdd = bdd->andfonc(bdd, std::string("( a & ( b & c ) )"));
-   bdd = bdd->orfonc(bdd, std::string("b & c"));
-   bdd = bdd->andfonc(bdd, bdd->getExpression());*/
-  //std::cout << "Expression : " << bdd->getExpression() << std::endl;
-
-  std::cout << "Debut build"<< std::endl;
-  //bdd->testeval("c00", false);
-  //node = bdd->build();
-  std::cout << "Fin build"<< std::endl;
-  fichier << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
-  std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
-  fichier << "Une solution : " << bdd->anysat() << std::endl;
-  std::cout << "Une solution : " << bdd->anysat() << std::endl;
-  //cout << bdd->draw() << endl << endl;
-  fichier << std::endl;
-  //bdd->allsat();
-  bdd->toDot("graph");
+  if (com == "satcount")
+    std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
+  else if (com == "anysat")
+    std::cout << "Une solution : " << bdd->anysat() << std::endl;
+  else if (com == "allsat")
+    bdd->allsat();
 
 
 

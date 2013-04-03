@@ -51,7 +51,7 @@ BDD* edge(std::string v1, std::string v2)
 {
   BDD* bdd1;
   std::ostringstream constraint;
-  
+
   constraint << "( ( "
   << REDGREEN << v1
   << " xor " << REDGREEN << v2 << " ) || ( "
@@ -73,7 +73,7 @@ BDD* edge(std::string v1, std::string v2)
     bdd = bdd->andfonc(bdd,	bdd1);
     bdd = bdd->transferinfo(bdd1, bdd);
   }
-  
+
   std::cout << "build sous bdd : " << v1 << "," << v2 << std::endl;
 	return bdd;
 }
@@ -83,13 +83,13 @@ BDD* edge(std::string v1, std::string v2)
 void exportGraphColors (std::string solution)
 {
   std::ofstream outFile("graph.data");
-  
+
   std::istringstream iss(solution);
   std::string token;
   while(getline(iss, token, ';'))
   {
     std::string prefix = token.substr(2,2);
-    
+
     if (hasEnding(token, "true"))
     {
       if (hasBegining(token, "[R"))
@@ -131,7 +131,7 @@ void exportGraphColors (std::string solution)
 
   std::map<std::string, int>::const_iterator it;
   std::ostringstream oss;
-  
+
   for (it = colorMap.begin(); it != colorMap.end(); ++it)
   {
     switch ((*it).second) {
@@ -153,7 +153,7 @@ void exportGraphColors (std::string solution)
 
   outFile << oss.str() << std::endl;
 
-  
+
   outFile.close();
 }
 
@@ -166,11 +166,11 @@ int GraphColoring::compute()
   clock_t start, end;
 	double elapsed;
   start = clock();
-  
+
   bdd = new BDD();
   bdd->setNbVar(NBVARS);
-  
-  
+
+
   edge("AL","FL"); edge("AL","GA"); edge("AL","MS"); edge("AL","TN"); // 5
   edge("AR","LA"); edge("AR","MO"); edge("AR","MS"); edge("AR","OK"); // 9
   edge("AR","TN"); edge("AR","TX"); edge("AZ","CA"); edge("AZ","NM"); // 13
@@ -198,21 +198,21 @@ int GraphColoring::compute()
   edge("OH","PA"); edge("OH","WV"); edge("OK","TX"); edge("OR","WA");
   edge("PA","WV"); edge("SD","WY"); edge("TN","VA"); edge("UT","WY");
   edge("VA","WV");
-  
-  
+
+
   //std::cout << "Nombre de solution satisfaisante pour bdd: " << bdd->satcount() << std::endl;
-  
-  
+
+
   std::string solution = bdd->anysat();
-  
+
   std::cout << "Une solution : " << solution << std::endl;
-  
+
   // performance analysis
   end = clock();
   elapsed = ((double)end - start) / CLOCKS_PER_SEC;
   std::cout << "Execution time : " << elapsed << std::endl;
-  
+
   exportGraphColors(solution);
-  
+
   return 0;
 }
